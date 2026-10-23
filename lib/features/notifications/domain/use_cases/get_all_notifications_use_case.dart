@@ -1,0 +1,14 @@
+import 'package:dartz/dartz.dart';
+import 'package:riverpod_structure/core/exceptions/app_exception.dart';
+import 'package:riverpod_structure/features/notifications/data/models/notification.dart';
+import 'package:riverpod_structure/features/notifications/domain/repository/notifications_repository.dart';
+
+class GetAllNotificationsUseCase {
+  final NotificationRepository notificationRepository;
+
+  GetAllNotificationsUseCase({required this.notificationRepository});
+
+  Future<Either<AppException, List<NotificationModel>>> execute() {
+    return notificationRepository.getNotifications();
+  }
+}
