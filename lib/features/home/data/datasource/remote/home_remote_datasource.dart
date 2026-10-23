@@ -3,9 +3,8 @@ import 'package:riverpod_structure/features/home/data/datasource/remote/home_rem
 import 'package:riverpod_structure/features/home/data/models/genre_response.dart';
 import 'package:riverpod_structure/features/home/data/models/movies_response.dart';
 import 'package:riverpod_structure/core/services/network/network_service.dart';
-
-import 'package:riverpod_structure/core/services/network/network_values.dart';
 import 'package:riverpod_structure/core/exceptions/app_exception.dart';
+import 'package:riverpod_structure/core/utils/app_urls.dart';
 
 class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   final NetworkService networkService;
@@ -44,13 +43,13 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
 
   @override
   Future<Either<AppException, GenreResponse>> getGenre() async {
-    final response = await networkService.get(EndPoints.genre);
+    final response = await networkService.get(AppUrls.genre);
     return response.fold((l) => Left(l), (r) {
       final jsonData = r.data;
       if (jsonData == null) {
         return Left(
           AppException(
-            identifier: EndPoints.genre,
+            identifier: AppUrls.genre,
             statusCode: 0,
             message: 'The data is not in the valid format',
             which: 'http',

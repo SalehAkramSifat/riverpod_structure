@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_structure/core/services/network/dio_network_service.dart';
 import 'package:riverpod_structure/core/services/network/network_service.dart';
 import 'package:riverpod_structure/core/services/storage/local_db.dart';
 import 'package:riverpod_structure/core/services/storage/local_db_impl.dart';

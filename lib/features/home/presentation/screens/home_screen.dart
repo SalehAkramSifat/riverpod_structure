@@ -6,7 +6,6 @@ import 'package:riverpod_structure/features/home/presentation/providers/home_sta
 import 'package:riverpod_structure/features/home/presentation/widgets/now_showing_movies.dart';
 import 'package:riverpod_structure/features/home/presentation/widgets/popular_movies.dart';
 import 'package:riverpod_structure/core/extensions/build_context_extensions.dart';
-import 'package:riverpod_structure/core/services/network/network_values.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

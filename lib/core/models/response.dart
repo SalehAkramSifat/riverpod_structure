@@ -1,24 +1,77 @@
 import 'package:dartz/dartz.dart';
-
 import 'package:riverpod_structure/core/exceptions/app_exception.dart';
 
-class Response {
+class ResponseData {
+  final bool isSuccess;
   final int statusCode;
-  final String? statusMessage;
-  final dynamic data;
+  final dynamic responseData;
+  final String errorMessage;
 
-  Response({
+  ResponseData({
+    required this.isSuccess,
     required this.statusCode,
-    required this.statusMessage,
-    required this.data,
+    this.responseData,
+    this.errorMessage = '',
   });
+
+  dynamic get data => responseData;
+
+  String get message => errorMessage;
+
+  String? get statusMessage => errorMessage.isNotEmpty ? errorMessage : null;
+
+  factory ResponseData.success({
+    required dynamic data,
+    int statusCode = 200,
+    String message = '',
+  }) {
+    return ResponseData(
+      isSuccess: true,
+      statusCode: statusCode,
+      responseData: data,
+      errorMessage: message,
+    );
+  }
+
+  factory ResponseData.error({
+    required String message,
+    int statusCode = 0,
+    dynamic data,
+  }) {
+    return ResponseData(
+      isSuccess: false,
+      statusCode: statusCode,
+      responseData: data,
+      errorMessage: message,
+    );
+  }
+
+  R fold<R>(
+    R Function(AppException failure) onFailure,
+    R Function(ResponseData success) onSuccess,
+  ) {
+    if (isSuccess) {
+      return onSuccess(this);
+    } else {
+      return onFailure(
+        AppException(
+          message: errorMessage,
+          statusCode: statusCode,
+          identifier: '',
+          which: 'http',
+        ),
+      );
+    }
+  }
 
   @override
   String toString() {
-    return 'Response{statusCode: $statusCode, statusMessage: $statusMessage, data: $data}';
+    return 'ResponseData{isSuccess: $isSuccess, statusCode: $statusCode, errorMessage: $errorMessage, responseData: $responseData}';
   }
 }
 
-extension ResponseExtension on Response {
-  Right<AppException, Response> get toRight => Right(this);
+typedef Response = ResponseData;
+
+extension ResponseExtension on ResponseData {
+  Right<AppException, ResponseData> get toRight => Right(this);
 }

@@ -11,7 +11,7 @@ class AppException implements Exception {
     required this.message,
     required this.statusCode,
     required this.identifier,
-    required this.which,
+    this.which,
   });
 
   @override
