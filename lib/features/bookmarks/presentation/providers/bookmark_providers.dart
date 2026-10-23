@@ -10,7 +10,7 @@ import 'package:riverpod_structure/features/bookmarks/domain/use_cases/remove_bo
 // Data Source
 final bookmarkLocalDataSourceProvider =
     Provider<BookmarkLocalDataSource>((ref) {
-  return BookmarkLocalDataSourceImpl(localDb: ref.watch(localDbProvider));
+  return BookmarkLocalDataSourceImpl();
 });
 
 // Repository

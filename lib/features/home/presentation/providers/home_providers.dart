@@ -13,7 +13,7 @@ import 'package:riverpod_structure/features/home/domain/use_cases/fetch_cached_m
 
 // Data Sources
 final homeLocalDataSourceProvider = Provider<HomeLocalDataSource>((ref) {
-  return HomeLocalDataSourceImpl(localDb: ref.watch(localDbProvider));
+  return HomeLocalDataSourceImpl();
 });
 
 final homeRemoteDataSourceProvider = Provider<HomeRemoteDataSource>((ref) {

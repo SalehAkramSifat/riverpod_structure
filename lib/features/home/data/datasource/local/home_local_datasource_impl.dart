@@ -1,81 +1,55 @@
 import 'package:dartz/dartz.dart';
-import 'package:riverpod_structure/features/home/data/models/movies.dart';
-import 'package:riverpod_structure/features/home/data/models/genres.dart';
 import 'package:riverpod_structure/core/exceptions/app_exception.dart';
-import 'package:isar/isar.dart';
-
-import 'package:riverpod_structure/core/services/storage/local_db.dart';
+import 'package:riverpod_structure/features/home/data/models/genres.dart';
+import 'package:riverpod_structure/features/home/data/models/movies.dart';
 import 'home_local_datasource.dart';
 
 class HomeLocalDataSourceImpl extends HomeLocalDataSource {
-  LocalDb localDb;
+  static final Map<String, Movies> _moviesCache = {};
+  static Genres? _genresCache;
 
-  HomeLocalDataSourceImpl({required this.localDb});
+  HomeLocalDataSourceImpl();
 
   @override
   Future<void> cacheMovies({required Movies movies}) async {
-    await localDb.getDb().writeTxn(() async {
-      final cached = await localDb
-          .getDb()
-          .movies
-          .filter()
-          .typeEqualTo(movies.type)
-          .pageEqualTo(movies.page)
-          .findFirst();
-      if (cached == null) {
-        await localDb.getDb().movies.put(movies);
-      } else {
-        await localDb.getDb().movies.put(movies.copyWith(id: cached.id));
-      }
-    });
+    _moviesCache[movies.type] = movies;
   }
 
   @override
   Future<void> cacheGenres({required Genres genres}) async {
-    await localDb.getDb().writeTxn(() async {
-      await localDb.getDb().genres.put(genres);
-    });
+    _genresCache = genres;
   }
 
   @override
   Future<Either<AppException, Genres>> getGenreCache() async {
-    final cachedGenres = await localDb.getDb().genres.where().findFirst();
-    if (cachedGenres == null) {
-      return Left(
-        AppException(
-          message: 'Genre not cached',
-          statusCode: 0,
-          identifier: 'genres',
-          which: 'cache',
-        ),
-      );
-    } else {
-      return Right(cachedGenres);
+    if (_genresCache != null) {
+      return Right(_genresCache!);
     }
+    return Left(
+      AppException(
+        message: 'Genre not cached',
+        statusCode: 0,
+        identifier: 'genres',
+        which: 'cache',
+      ),
+    );
   }
 
   @override
   Future<Either<AppException, Movies>> getCacheMovies({
     required String type,
   }) async {
-    final movies = await localDb
-        .getDb()
-        .movies
-        .filter()
-        .typeEqualTo(type)
-        .pageEqualTo(0) // Cache on 0 page
-        .findFirst();
-    if (movies == null) {
-      return Left(
-        AppException(
-          message: 'Cache not Found',
-          statusCode: 0,
-          identifier: type,
-          which: 'cache',
-        ),
-      );
-    } else {
-      return Right(movies);
+    final cached = _moviesCache[type];
+    if (cached != null) {
+      return Right(cached);
     }
+    return Left(
+      AppException(
+        message: 'Cache not found',
+        statusCode: 0,
+        identifier: type,
+        which: 'cache',
+      ),
+    );
   }
 }
