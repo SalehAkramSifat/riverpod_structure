@@ -106,17 +106,67 @@ class AuthService {
     }
   }
 
+  // ================= Storage Helpers =================
+  static Future<void> write(String key, String value) async {
+    try {
+      await _storage.write(key: key, value: value);
+    } catch (e, stack) {
+      AppLogger.error('Error writing to storage ($key)', error: e, stackTrace: stack);
+    }
+  }
+
+  static Future<String?> read(String key) async {
+    try {
+      return await _storage.read(key: key);
+    } catch (e, stack) {
+      AppLogger.error('Error reading from storage ($key)', error: e, stackTrace: stack);
+      return null;
+    }
+  }
+
+  static Future<void> delete(String key) async {
+    try {
+      await _storage.delete(key: key);
+    } catch (e, stack) {
+      AppLogger.error('Error deleting key ($key)', error: e, stackTrace: stack);
+    }
+  }
+
+  static Future<bool> containsKey(String key) async {
+    try {
+      return await _storage.containsKey(key: key);
+    } catch (e) {
+      return false;
+    }
+  }
+
   static Future<void> logoutUser() async {
     try {
       _token = null;
       _role = null;
       _userId = null;
       _userData = null;
-      await _storage.deleteAll();
-      AppLogger.info('Logout: Secure credentials cleared.');
+      await _storage.delete(key: _tokenKey);
+      await _storage.delete(key: _roleKey);
+      await _storage.delete(key: _userIdKey);
+      await _storage.delete(key: _userDataKey);
+      AppLogger.info('Logout: Auth credentials cleared.');
       await goToLogin();
     } catch (e, stack) {
       AppLogger.error('Error during logout', error: e, stackTrace: stack);
+    }
+  }
+
+  static Future<void> clearAll() async {
+    try {
+      _token = null;
+      _role = null;
+      _userId = null;
+      _userData = null;
+      await _storage.deleteAll();
+      AppLogger.info('All secure storage cleared.');
+    } catch (e, stack) {
+      AppLogger.error('Error clearing storage', error: e, stackTrace: stack);
     }
   }
 

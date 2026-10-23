@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_structure/core/services/core_service_providers.dart';
-import 'package:riverpod_structure/core/services/storage/shared_pref.dart';
+import 'package:riverpod_structure/core/services/auth_service.dart';
 
 final appThemeProvider = NotifierProvider<AppThemeNotifier, ThemeMode>(
   AppThemeNotifier.new,
@@ -10,8 +9,6 @@ final appThemeProvider = NotifierProvider<AppThemeNotifier, ThemeMode>(
 class AppThemeNotifier extends Notifier<ThemeMode> {
   static const String _themeKey = 'app_theme';
 
-  SharedPref get _sharedPref => ref.read(sharedPrefProvider);
-
   @override
   ThemeMode build() {
     _loadSavedTheme();
@@ -19,7 +16,7 @@ class AppThemeNotifier extends Notifier<ThemeMode> {
   }
 
   Future<void> _loadSavedTheme() async {
-    final String? savedTheme = await _sharedPref.get(_themeKey) as String?;
+    final String? savedTheme = await AuthService.read(_themeKey);
     if (savedTheme != null) {
       state = switch (savedTheme) {
         'light' => ThemeMode.light,
@@ -31,17 +28,17 @@ class AppThemeNotifier extends Notifier<ThemeMode> {
 
   void setLightTheme() {
     state = ThemeMode.light;
-    _sharedPref.set(_themeKey, 'light');
+    AuthService.write(_themeKey, 'light');
   }
 
   void setDarkTheme() {
     state = ThemeMode.dark;
-    _sharedPref.set(_themeKey, 'dark');
+    AuthService.write(_themeKey, 'dark');
   }
 
   void setSystemTheme() {
     state = ThemeMode.system;
-    _sharedPref.set(_themeKey, 'system');
+    AuthService.write(_themeKey, 'system');
   }
 
   void toggleTheme() {
