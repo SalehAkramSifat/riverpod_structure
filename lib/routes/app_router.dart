@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:riverpod_structure/features/bookmarks/presentation/screens/bookmark_screen.dart';
-import 'package:riverpod_structure/features/home/presentation/screens/home_page.dart';
-import 'package:riverpod_structure/features/movie_detail/presentation/screen/movie_detail_screen.dart';
 
 class AppRoute {
   // Route Paths
@@ -13,22 +10,22 @@ class AppRoute {
 
   // Route List
   static final List<RouteBase> routes = [
-    GoRoute(
-      path: home,
-      name: 'home',
-      builder: (context, state) => HomePage(key: state.pageKey),
-    ),
-    GoRoute(
-      path: movieDetail,
-      name: 'movieDetail',
-      builder: (context, state) =>
-          MovieDetailScreen(key: state.pageKey, movieId: state.extra as int),
-    ),
-    GoRoute(
-      path: bookmarks,
-      name: 'bookmarks',
-      builder: (context, state) => BookmarkScreen(key: state.pageKey),
-    ),
+    // GoRoute(
+    //   path: home,
+    //   name: 'home',
+    //   builder: (context, state) => HomePage(key: state.pageKey),
+    // ),
+    // GoRoute(
+    //   path: movieDetail,
+    //   name: 'movieDetail',
+    //   builder: (context, state) =>
+    //       MovieDetailScreen(key: state.pageKey, movieId: state.extra as int),
+    // ),
+    // GoRoute(
+    //   path: bookmarks,
+    //   name: 'bookmarks',
+    //   builder: (context, state) => BookmarkScreen(key: state.pageKey),
+    // ),
   ];
 }
 
