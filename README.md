@@ -108,7 +108,7 @@ Location: [`lib/core/services/auth_service.dart`](file:///c:/Project/riverpod_st
 ### 2. Network Client (`NetworkCaller`)
 Location: [`lib/core/services/network_service.dart`](file:///c:/Project/riverpod_structure/lib/core/services/network_service.dart)
 
-Clean, readable, and reliable HTTP client built on `package:http/http.dart`:
+Clean, readable, and robust HTTP client powered by **`Dio`**:
 - **Supported Methods**: `getRequest`, `postRequest`, `loginPostRequest`, `putRequest`, `patchRequest`, `deleteRequest`, and `multipartRequest`.
 - **Automatic Bearer Token Injection**: Automatically injects `Authorization: Bearer <token>` from `AuthService.token` unless explicitly overridden.
 - **Automatic 401 Session Expiry**: Calls `NetworkCaller.onUnauthorized` callback on receiving HTTP 401, redirecting the user to login.

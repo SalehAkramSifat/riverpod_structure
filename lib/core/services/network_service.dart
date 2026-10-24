@@ -1,10 +1,8 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
 import 'package:riverpod_structure/core/logging/logger.dart';
-import 'package:riverpod_structure/core/models/response.dart';
+import 'package:riverpod_structure/core/models/response.dart' hide Response;
 import 'package:riverpod_structure/core/services/auth_service.dart';
 import 'package:riverpod_structure/core/services/network_controller.dart';
 import 'package:riverpod_structure/core/utils/app_urls.dart';
@@ -14,21 +12,36 @@ class Params {
   static const String apiKey = 'api_key';
 }
 
+/// Clean, short, and production-ready HTTP Network Caller powered by [Dio].
 class NetworkCaller {
   static const Duration _timeout = Duration(seconds: 30);
+
+  final Dio _dio;
 
   static String? authToken;
   static String? Function()? tokenProvider;
   static void Function()? onUnauthorized;
 
   static void clearToken() => authToken = null;
-
   static bool get isOffline => !NetworkController.isConnectedNow;
 
   static ResponseData get _offlineResponse => ResponseData.error(
         message: 'No internet connection. Please verify your network.',
         statusCode: 0,
       );
+
+  NetworkCaller({Dio? dio})
+      : _dio = dio ??
+            Dio(
+              BaseOptions(
+                baseUrl: AppUrls.baseUrl,
+                connectTimeout: _timeout,
+                receiveTimeout: _timeout,
+                sendTimeout: _timeout,
+                validateStatus: (status) => true, // Manual status validation for clean handling
+                responseType: ResponseType.json,
+              ),
+            );
 
   // 1️⃣ GET Request
   Future<ResponseData> getRequest(
@@ -39,14 +52,15 @@ class NetworkCaller {
   }) async {
     if (isOffline) return _offlineResponse;
     AppLogger.info('🌐 GET Request: $endpoint');
+
     try {
-      final uri = _buildUri(endpoint, queryParams);
-      final response = await http
-          .get(
-            uri,
-            headers: _buildHeaders(token: token, extraHeaders: headers),
-          )
-          .timeout(_timeout);
+      final response = await _dio.get(
+        endpoint,
+        queryParameters: queryParams,
+        options: Options(
+          headers: _buildHeaders(token: token, extraHeaders: headers),
+        ),
+      );
       return _handleResponse(response);
     } catch (e) {
       return _handleError(e);
@@ -67,26 +81,25 @@ class NetworkCaller {
     if (body != null) AppLogger.json(body, tag: 'POST Request');
 
     try {
-      final uri = _buildUri(endpoint, queryParams);
-      final response = await http
-          .post(
-            uri,
-            headers: _buildHeaders(
-              token: token,
-              extraHeaders: headers,
-              attachAuth: attachAuth,
-            ),
-            body: body != null
-                ? (body is String ? body : jsonEncode(body))
-                : null,
-          )
-          .timeout(_timeout);
+      final response = await _dio.post(
+        endpoint,
+        data: body,
+        queryParameters: queryParams,
+        options: Options(
+          headers: _buildHeaders(
+            token: token,
+            extraHeaders: headers,
+            attachAuth: attachAuth,
+          ),
+        ),
+      );
       return _handleResponse(response);
     } catch (e) {
       return _handleError(e);
     }
   }
 
+  /// Specialized POST for Auth/Login (ignores Bearer token)
   Future<ResponseData> loginPostRequest(
     String endpoint, {
     dynamic body,
@@ -115,16 +128,14 @@ class NetworkCaller {
     if (body != null) AppLogger.json(body, tag: 'PUT Request');
 
     try {
-      final uri = _buildUri(endpoint, queryParams);
-      final response = await http
-          .put(
-            uri,
-            headers: _buildHeaders(token: token, extraHeaders: headers),
-            body: body != null
-                ? (body is String ? body : jsonEncode(body))
-                : null,
-          )
-          .timeout(_timeout);
+      final response = await _dio.put(
+        endpoint,
+        data: body,
+        queryParameters: queryParams,
+        options: Options(
+          headers: _buildHeaders(token: token, extraHeaders: headers),
+        ),
+      );
       return _handleResponse(response);
     } catch (e) {
       return _handleError(e);
@@ -144,16 +155,14 @@ class NetworkCaller {
     if (body != null) AppLogger.json(body, tag: 'PATCH Request');
 
     try {
-      final uri = _buildUri(endpoint, queryParams);
-      final response = await http
-          .patch(
-            uri,
-            headers: _buildHeaders(token: token, extraHeaders: headers),
-            body: body != null
-                ? (body is String ? body : jsonEncode(body))
-                : null,
-          )
-          .timeout(_timeout);
+      final response = await _dio.patch(
+        endpoint,
+        data: body,
+        queryParameters: queryParams,
+        options: Options(
+          headers: _buildHeaders(token: token, extraHeaders: headers),
+        ),
+      );
       return _handleResponse(response);
     } catch (e) {
       return _handleError(e);
@@ -170,17 +179,16 @@ class NetworkCaller {
   }) async {
     if (isOffline) return _offlineResponse;
     AppLogger.info('🗑️ DELETE Request: $endpoint');
+
     try {
-      final uri = _buildUri(endpoint, queryParams);
-      final response = await http
-          .delete(
-            uri,
-            headers: _buildHeaders(token: token, extraHeaders: headers),
-            body: body != null
-                ? (body is String ? body : jsonEncode(body))
-                : null,
-          )
-          .timeout(_timeout);
+      final response = await _dio.delete(
+        endpoint,
+        data: body,
+        queryParameters: queryParams,
+        options: Options(
+          headers: _buildHeaders(token: token, extraHeaders: headers),
+        ),
+      );
       return _handleResponse(response);
     } catch (e) {
       return _handleError(e);
@@ -195,146 +203,74 @@ class NetworkCaller {
     List<MapEntry<String, File>>? files,
     String? token,
     Map<String, String>? headers,
+    ProgressCallback? onSendProgress,
   }) async {
     if (isOffline) return _offlineResponse;
     AppLogger.info('📦 $method Multipart Request: $endpoint');
-    try {
-      final uri = _buildUri(endpoint);
-      final request = http.MultipartRequest(method, uri);
 
-      final requestHeaders = _buildHeaders(token: token, extraHeaders: headers)
-        ..remove('Content-Type');
-      request.headers.addAll(requestHeaders);
+    try {
+      final formData = FormData();
 
       if (fields != null) {
         fields.forEach((key, value) {
           if (value != null) {
-            request.fields[key] = value is Map || value is List
-                ? jsonEncode(value)
-                : value.toString();
+            formData.fields.add(MapEntry(key, value.toString()));
           }
         });
       }
 
       if (files != null) {
         for (final entry in files) {
-          if (entry.value.existsSync()) {
-            request.files.add(
-              await http.MultipartFile.fromPath(entry.key, entry.value.path),
-            );
-          } else {
-            AppLogger.warning(
-              '⚠️ Multipart File not found: ${entry.value.path}',
-            );
-          }
+          final file = entry.value;
+          final fileName = file.path.split(Platform.pathSeparator).last;
+          formData.files.add(
+            MapEntry(
+              entry.key,
+              await MultipartFile.fromFile(file.path, filename: fileName),
+            ),
+          );
         }
       }
 
-      final streamedResponse = await request.send().timeout(_timeout * 2);
-      final response = await http.Response.fromStream(streamedResponse);
+      final requestHeaders = _buildHeaders(token: token, extraHeaders: headers)
+        ..remove('Content-Type');
+
+      final response = await _dio.request(
+        endpoint,
+        data: formData,
+        options: Options(
+          method: method,
+          headers: requestHeaders,
+        ),
+        onSendProgress: onSendProgress,
+      );
+
       return _handleResponse(response);
     } catch (e) {
       return _handleError(e);
     }
   }
 
+  /// Alias for multipart POST request
   Future<ResponseData> multipartPostRequest(
     String endpoint, {
     Map<String, dynamic>? fields,
     List<MapEntry<String, File>>? files,
     String? token,
     Map<String, String>? headers,
-  }) {
-    return multipartRequest(
-      endpoint,
-      method: 'POST',
-      fields: fields,
-      files: files,
-      token: token,
-      headers: headers,
-    );
-  }
+    ProgressCallback? onSendProgress,
+  }) =>
+      multipartRequest(
+        endpoint,
+        method: 'POST',
+        fields: fields,
+        files: files,
+        token: token,
+        headers: headers,
+        onSendProgress: onSendProgress,
+      );
 
-  Future<ResponseData> multipartPatchRequest(
-    String endpoint, {
-    Map<String, dynamic>? fields,
-    List<MapEntry<String, File>>? files,
-    String? token,
-    Map<String, String>? headers,
-  }) {
-    return multipartRequest(
-      endpoint,
-      method: 'PATCH',
-      fields: fields,
-      files: files,
-      token: token,
-      headers: headers,
-    );
-  }
-
-  Future<ResponseData> multipartPutRequest(
-    String endpoint, {
-    Map<String, dynamic>? fields,
-    List<MapEntry<String, File>>? files,
-    String? token,
-    Map<String, String>? headers,
-  }) {
-    return multipartRequest(
-      endpoint,
-      method: 'PUT',
-      fields: fields,
-      files: files,
-      token: token,
-      headers: headers,
-    );
-  }
-
-  Future<ResponseData> get(
-    String endpoint, {
-    Map<String, dynamic>? queryParams,
-    Map<String, String>? headers,
-    String? token,
-  }) => getRequest(
-    endpoint,
-    queryParams: queryParams,
-    token: token,
-    headers: headers,
-  );
-
-  Future<ResponseData> post(
-    String endpoint, {
-    dynamic data,
-    dynamic body,
-    Map<String, dynamic>? queryParams,
-    Map<String, String>? headers,
-    String? token,
-  }) => postRequest(
-    endpoint,
-    body: body ?? data,
-    queryParams: queryParams,
-    token: token,
-    headers: headers,
-  );
-
-  // Helpers & Handlers
-  Uri _buildUri(String endpoint, [Map<String, dynamic>? queryParams]) {
-    String url = endpoint;
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      final base = AppUrls.baseUrl.endsWith('/')
-          ? AppUrls.baseUrl
-          : '${AppUrls.baseUrl}/';
-      final path = url.startsWith('/') ? url.substring(1) : url;
-      url = '$base$path';
-    }
-
-    final uri = Uri.parse(url);
-    if (queryParams != null && queryParams.isNotEmpty) {
-      final query = Map<String, String>.from(uri.queryParameters);
-      queryParams.forEach((k, v) => query[k] = v.toString());
-      return uri.replace(queryParameters: query);
-    }
-    return uri;
-  }
+  // ================= Private Helpers =================
 
   Map<String, String> _buildHeaders({
     String? token,
@@ -342,17 +278,20 @@ class NetworkCaller {
     bool attachAuth = true,
   }) {
     final headers = <String, String>{
-      'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'Content-Type': 'application/json',
     };
 
     if (attachAuth) {
-      final effectiveToken =
-          token ?? AuthService.token ?? tokenProvider?.call() ?? authToken;
-      if (effectiveToken != null && effectiveToken.trim().isNotEmpty) {
-        headers['Authorization'] = effectiveToken.startsWith('Bearer ')
-            ? effectiveToken
-            : 'Bearer $effectiveToken';
+      final activeToken = token ??
+          authToken ??
+          tokenProvider?.call() ??
+          AuthService.token;
+
+      if (activeToken != null && activeToken.trim().isNotEmpty) {
+        headers['Authorization'] = activeToken.startsWith('Bearer ')
+            ? activeToken
+            : 'Bearer $activeToken';
       }
     }
 
@@ -363,133 +302,151 @@ class NetworkCaller {
     return headers;
   }
 
-  ResponseData _handleResponse(http.Response response) {
-    final decoded = _safeDecode(response.body);
+  ResponseData _handleResponse(Response response) {
+    final statusCode = response.statusCode ?? 500;
+    final dynamic data = response.data;
 
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      AppLogger.info(
-        '✅ Response [${response.statusCode}]: ${response.request?.url ?? ''}',
-      );
+    AppLogger.info('📥 Status: $statusCode');
+
+    if (statusCode >= 200 && statusCode < 300) {
       return ResponseData.success(
-        data: decoded,
-        statusCode: response.statusCode,
-        message: _extractSuccessMessage(decoded),
+        responseData: data,
+        statusCode: statusCode,
       );
     }
 
-    if (response.statusCode == 401) {
-      AppLogger.warning(
-        '🔒 Response [401 Unauthorized]: ${response.request?.url ?? ''}',
-      );
+    if (statusCode == 401) {
+      AppLogger.warning('🔒 Unauthorized (401). Triggering session expiration.');
       onUnauthorized?.call();
       return ResponseData.error(
-        message: _extractErrorMessage(
-          decoded,
-          'Your session has expired. Please log in again.',
-        ),
+        message: _extractErrorMessage(data) ??
+            'Session expired. Please log in again.',
         statusCode: 401,
-        data: decoded,
+        responseData: data,
       );
     }
 
-    if (response.statusCode == 403) {
-      AppLogger.warning(
-        '🚫 Response [403 Forbidden]: ${response.request?.url ?? ''}',
-      );
-      return ResponseData.error(
-        message: _extractErrorMessage(
-          decoded,
-          'You do not have permission to access this resource.',
-        ),
-        statusCode: 403,
-        data: decoded,
-      );
-    }
+    final errorMessage = _extractErrorMessage(data) ??
+        'Request failed with status $statusCode';
 
-    AppLogger.error(
-      '⚠️ Response [${response.statusCode}]: ${response.request?.url ?? ''}',
-    );
+    AppLogger.error('❌ API Error: $errorMessage (Code: $statusCode)');
     return ResponseData.error(
-      message: _extractErrorMessage(
-        decoded,
-        'Request failed with status code ${response.statusCode}.',
-      ),
-      statusCode: response.statusCode,
-      data: decoded,
+      message: errorMessage,
+      statusCode: statusCode,
+      responseData: data,
     );
-  }
-
-  dynamic _safeDecode(String body) {
-    try {
-      return jsonDecode(body);
-    } catch (_) {
-      return body;
-    }
-  }
-
-  String _extractErrorMessage(dynamic decoded, String defaultMessage) {
-    if (decoded is Map) {
-      if (decoded['message'] != null) return decoded['message'].toString();
-      if (decoded['error'] != null) return decoded['error'].toString();
-      if (decoded['errors'] != null) {
-        final err = decoded['errors'];
-        if (err is Map && err.isNotEmpty) {
-          final first = err.values.first;
-          return (first is List && first.isNotEmpty)
-              ? first.first.toString()
-              : first.toString();
-        } else if (err is List && err.isNotEmpty) {
-          return err.first.toString();
-        }
-        return err.toString();
-      }
-    } else if (decoded is String) {
-      final trimmed = decoded.trim();
-      if (trimmed.startsWith('<') || trimmed.toLowerCase().contains('<html>')) {
-        return defaultMessage;
-      }
-      if (trimmed.isNotEmpty) {
-        return trimmed.length > 200
-            ? '${trimmed.substring(0, 200)}...'
-            : trimmed;
-      }
-    }
-    return defaultMessage;
-  }
-
-  String _extractSuccessMessage(dynamic decoded) {
-    if (decoded is Map && decoded['message'] != null) {
-      return decoded['message'].toString();
-    }
-    return '';
   }
 
   ResponseData _handleError(dynamic error) {
-    if (error is TimeoutException) {
-      AppLogger.error('⏱️ ❌ Network Error (Timeout): $error');
-      return ResponseData.error(
-        message: 'Request timed out. Please check your internet connection.',
-        statusCode: 408,
-      );
-    } else if (error is SocketException) {
-      AppLogger.error('🔌 ❌ Network Error (No Internet): $error');
+    if (error is DioException) {
+      AppLogger.error('❌ DioException: [${error.type}] ${error.message}');
+      switch (error.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          return ResponseData.error(
+            message:
+                'Request timed out. Please check your internet connection.',
+            statusCode: 408,
+          );
+        case DioExceptionType.connectionError:
+          return ResponseData.error(
+            message: 'No internet connection. Please verify your network.',
+            statusCode: 0,
+          );
+        case DioExceptionType.badCertificate:
+          return ResponseData.error(
+            message: 'Security certificate error. Please try again later.',
+            statusCode: 495,
+          );
+        case DioExceptionType.cancel:
+          return ResponseData.error(
+            message: 'Request was cancelled.',
+            statusCode: 499,
+          );
+        case DioExceptionType.badResponse:
+          if (error.response != null) {
+            return _handleResponse(error.response!);
+          }
+          return ResponseData.error(
+            message: 'Server returned an invalid response.',
+            statusCode: error.response?.statusCode ?? 500,
+          );
+        case DioExceptionType.transformTimeout:
+          return ResponseData.error(
+            message: 'Data processing timed out. Please try again.',
+            statusCode: 408,
+          );
+        case DioExceptionType.unknown:
+          if (error.error is SocketException) {
+            return ResponseData.error(
+              message: 'No internet connection. Please verify your network.',
+              statusCode: 0,
+            );
+          }
+          return ResponseData.error(
+            message:
+                'An unexpected network error occurred. Please try again.',
+            statusCode: 500,
+          );
+      }
+    }
+
+    if (error is SocketException) {
       return ResponseData.error(
         message: 'No internet connection. Please verify your network.',
         statusCode: 0,
       );
-    } else if (error is http.ClientException) {
-      AppLogger.error('📡 ❌ Network Error (Client Exception): $error');
-      return ResponseData.error(
-        message: 'Client communication error. Please try again.',
-        statusCode: 500,
-      );
-    } else {
-      AppLogger.error('💥 ❌ Network Error: $error');
-      return ResponseData.error(
-        message: 'An unexpected network error occurred. Please try again.',
-        statusCode: 500,
-      );
     }
+
+    AppLogger.error('💥 Unexpected Network Error: $error');
+    return ResponseData.error(
+      message: 'An unexpected error occurred. Please try again.',
+      statusCode: 500,
+    );
+  }
+
+  String? _extractErrorMessage(dynamic data) {
+    if (data == null) return null;
+
+    if (data is String) {
+      final trimmed = data.trim();
+      if (trimmed.startsWith('<!DOCTYPE html>') ||
+          trimmed.startsWith('<html') ||
+          trimmed.contains('<body')) {
+        return 'Server error occurred. Please try again later.';
+      }
+      return trimmed.isNotEmpty ? trimmed : null;
+    }
+
+    if (data is Map) {
+      final messageKeys = [
+        'message',
+        'error',
+        'errorMessage',
+        'msg',
+        'detail',
+        'status_message',
+      ];
+      for (final key in messageKeys) {
+        if (data.containsKey(key) && data[key] != null) {
+          final val = data[key];
+          if (val is String && val.trim().isNotEmpty) return val.trim();
+          if (val is List && val.isNotEmpty) return val.first.toString();
+        }
+      }
+
+      if (data.containsKey('errors') && data['errors'] is Map) {
+        final errors = data['errors'] as Map;
+        final firstError = errors.values.firstOrNull;
+        if (firstError is List && firstError.isNotEmpty) {
+          return firstError.first.toString();
+        }
+        if (firstError != null) return firstError.toString();
+      }
+    }
+
+    return null;
   }
 }
 

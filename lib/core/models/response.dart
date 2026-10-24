@@ -21,14 +21,15 @@ class ResponseData {
   String? get statusMessage => errorMessage.isNotEmpty ? errorMessage : null;
 
   factory ResponseData.success({
-    required dynamic data,
+    dynamic data,
+    dynamic responseData,
     int statusCode = 200,
     String message = '',
   }) {
     return ResponseData(
       isSuccess: true,
       statusCode: statusCode,
-      responseData: data,
+      responseData: data ?? responseData,
       errorMessage: message,
     );
   }
@@ -37,11 +38,12 @@ class ResponseData {
     required String message,
     int statusCode = 0,
     dynamic data,
+    dynamic responseData,
   }) {
     return ResponseData(
       isSuccess: false,
       statusCode: statusCode,
-      responseData: data,
+      responseData: data ?? responseData,
       errorMessage: message,
     );
   }
