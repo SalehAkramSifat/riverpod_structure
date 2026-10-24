@@ -1,6 +1,8 @@
-# 🚀 Flutter Riverpod Production Boilerplate
+# 🚀 Flutter Riverpod Starter Template
 
-A modern, scalable, and highly maintainable Flutter architecture boilerplate powered by **Flutter Riverpod 3.x**, **GoRouter**, and **Clean Architecture** principles. Designed for rapid development without unnecessary over-engineering.
+A clean, readable, and beginner-friendly Flutter architecture boilerplate powered by **Flutter Riverpod 3.x**, **GoRouter**, and **Dio**.
+
+🔗 **Repository:** [https://github.com/SalehAkramSifat/riverpod_structure](https://github.com/SalehAkramSifat/riverpod_structure)
 
 ---
 
@@ -228,21 +230,27 @@ Referenced cleanly via centralized constants:
 
 ## 🛠️ Getting Started
 
-### 1. Prerequisites
+### 1. Clone the Repository
+```bash
+git clone https://github.com/SalehAkramSifat/riverpod_structure.git
+cd riverpod_structure
+```
+
+### 2. Prerequisites
 - Flutter SDK `^3.12.x` or higher
 - Dart SDK `^3.12.x`
 
-### 2. Install Dependencies
+### 3. Install Dependencies
 ```bash
 flutter pub get
 ```
 
-### 3. Verify Code Integrity
+### 4. Verify Code Integrity
 ```bash
 dart analyze lib/core lib/routes lib/main.dart lib/app.dart
 ```
 
-### 4. Run the Project
+### 5. Run the Project
 ```bash
 flutter run
 ```
