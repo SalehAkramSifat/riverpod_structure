@@ -2,7 +2,8 @@
 
 A clean, readable, and beginner-friendly Flutter architecture boilerplate powered by **Flutter Riverpod 3.x**, **GoRouter**, and **Dio**.
 
-🔗 **Repository:** [https://github.com/SalehAkramSifat/riverpod_structure](https://github.com/SalehAkramSifat/riverpod_structure)
+🔗 **Repository:** [https://github.com/SalehAkramSifat/riverpod_structure](https://github.com/SalehAkramSifat/riverpod_structure)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
@@ -254,3 +255,10 @@ dart analyze lib/core lib/routes lib/main.dart lib/app.dart
 ```bash
 flutter run
 ```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
