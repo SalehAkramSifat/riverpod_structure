@@ -2,6 +2,7 @@ import 'dart:ui';
 
 class AppColors {
   static const Color primary = primaryLight;
+  static const Color success = Color(0xFF10B981);
   static const Color primaryLight = Color(0xFF110E47);
   static const Color secondaryLight = Color(0xFF9C9C9C);
   static const Color textSecondary = secondaryLight;
@@ -27,10 +28,16 @@ class AppColors {
 
   static const Color chipColorDark = Color(0xFF8A96AB);
   static const Color chipTextDark = Color(0xFFAEC6F6);
-  static const Color updateNotificationColorLight = Color(0xFF4CAF50); // Green color
-  static const Color updateNotificationColorDark = Color(0xFF00796B); // Dark green color
-  static const Color deleteNotificationColorLight = Color(0xFFE57373); // Red color
-  static const Color deleteNotificationColorDark = Color(0xFFB71C1C); // Dark red color
-
-
+  static const Color updateNotificationColorLight = Color(
+    0xFF4CAF50,
+  ); // Green color
+  static const Color updateNotificationColorDark = Color(
+    0xFF00796B,
+  ); // Dark green color
+  static const Color deleteNotificationColorLight = Color(
+    0xFFE57373,
+  ); // Red color
+  static const Color deleteNotificationColorDark = Color(
+    0xFFB71C1C,
+  ); // Dark red color
 }

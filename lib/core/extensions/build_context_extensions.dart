@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:riverpod_structure/core/common/app_snackbar.dart';
 
 extension BuildContextExtension on BuildContext {
   ThemeData get theme => Theme.of(this);
@@ -20,15 +21,21 @@ extension BuildContextExtension on BuildContext {
 
   void unfocus() => FocusScope.of(this).unfocus();
 
-  void showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(this)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: isError ? Colors.redAccent : null,
-          behavior: SnackBarBehavior.floating,
-        ),
+  void showSnackBar(String message, {bool isError = false, String? title}) {
+    if (isError) {
+      AppSnackBar.showError(message, context: this, title: title ?? 'Error');
+    } else {
+      AppSnackBar.showSuccess(
+        message,
+        context: this,
+        title: title ?? 'Success',
       );
+    }
   }
+
+  void showErrorSnackBar(String message, {String title = 'Error'}) =>
+      AppSnackBar.showError(message, context: this, title: title);
+
+  void showSuccessSnackBar(String message, {String title = 'Success'}) =>
+      AppSnackBar.showSuccess(message, context: this, title: title);
 }
