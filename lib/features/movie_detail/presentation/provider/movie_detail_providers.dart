@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_structure/core/services/core_service_providers.dart';
+import 'package:riverpod_structure/core/services/network_service.dart';
 import 'package:riverpod_structure/features/movie_detail/data/repositories/movie_detail_repository_impl.dart';
 import 'package:riverpod_structure/features/movie_detail/domain/repositories/movie_detail_repository.dart';
 import 'package:riverpod_structure/features/movie_detail/domain/use_cases/add_bookmark_use_case.dart';

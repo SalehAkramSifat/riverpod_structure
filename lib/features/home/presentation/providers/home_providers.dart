@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_structure/core/services/core_service_providers.dart';
+import 'package:riverpod_structure/core/services/network_service.dart';
 import 'package:riverpod_structure/features/home/data/datasource/local/home_local_datasource.dart';
 import 'package:riverpod_structure/features/home/data/datasource/local/home_local_datasource_impl.dart';
 import 'package:riverpod_structure/features/home/data/datasource/remote/home_remote_data_source.dart';

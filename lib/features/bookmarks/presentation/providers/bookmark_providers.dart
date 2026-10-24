@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_structure/core/services/core_service_providers.dart';
 import 'package:riverpod_structure/features/bookmarks/data/datasource/local/bookmark_local_datasource.dart';
 import 'package:riverpod_structure/features/bookmarks/data/datasource/local/bookmark_local_datasource_impl.dart';
 import 'package:riverpod_structure/features/bookmarks/data/repositories/bookmark_repository_impl.dart';

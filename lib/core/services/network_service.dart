@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_structure/core/logging/logger.dart';
 import 'package:riverpod_structure/core/models/response.dart';
 import 'package:riverpod_structure/core/services/auth_service.dart';
+import 'package:riverpod_structure/core/services/network_controller.dart';
 import 'package:riverpod_structure/core/utils/app_urls.dart';
 
 class Params {
@@ -21,6 +23,13 @@ class NetworkCaller {
 
   static void clearToken() => authToken = null;
 
+  static bool get isOffline => !NetworkController.isConnectedNow;
+
+  static ResponseData get _offlineResponse => ResponseData.error(
+        message: 'No internet connection. Please verify your network.',
+        statusCode: 0,
+      );
+
   // 1️⃣ GET Request
   Future<ResponseData> getRequest(
     String endpoint, {
@@ -28,6 +37,7 @@ class NetworkCaller {
     String? token,
     Map<String, String>? headers,
   }) async {
+    if (isOffline) return _offlineResponse;
     AppLogger.info('🌐 GET Request: $endpoint');
     try {
       final uri = _buildUri(endpoint, queryParams);
@@ -52,6 +62,7 @@ class NetworkCaller {
     Map<String, String>? headers,
     bool attachAuth = true,
   }) async {
+    if (isOffline) return _offlineResponse;
     AppLogger.info('🚀 POST Request: $endpoint');
     if (body != null) AppLogger.json(body, tag: 'POST Request');
 
@@ -99,6 +110,7 @@ class NetworkCaller {
     String? token,
     Map<String, String>? headers,
   }) async {
+    if (isOffline) return _offlineResponse;
     AppLogger.info('🔄 PUT Request: $endpoint');
     if (body != null) AppLogger.json(body, tag: 'PUT Request');
 
@@ -127,6 +139,7 @@ class NetworkCaller {
     String? token,
     Map<String, String>? headers,
   }) async {
+    if (isOffline) return _offlineResponse;
     AppLogger.info('✏️ PATCH Request: $endpoint');
     if (body != null) AppLogger.json(body, tag: 'PATCH Request');
 
@@ -155,6 +168,7 @@ class NetworkCaller {
     String? token,
     Map<String, String>? headers,
   }) async {
+    if (isOffline) return _offlineResponse;
     AppLogger.info('🗑️ DELETE Request: $endpoint');
     try {
       final uri = _buildUri(endpoint, queryParams);
@@ -182,6 +196,7 @@ class NetworkCaller {
     String? token,
     Map<String, String>? headers,
   }) async {
+    if (isOffline) return _offlineResponse;
     AppLogger.info('📦 $method Multipart Request: $endpoint');
     try {
       final uri = _buildUri(endpoint);
@@ -480,3 +495,8 @@ class NetworkCaller {
 
 typedef NetworkService = NetworkCaller;
 typedef DioNetworkService = NetworkCaller;
+
+/// Global Riverpod provider for [NetworkCaller]
+final networkServiceProvider = Provider<NetworkCaller>((ref) {
+  return NetworkCaller();
+});

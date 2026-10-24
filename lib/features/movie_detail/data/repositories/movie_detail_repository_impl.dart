@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:riverpod_structure/core/exceptions/app_exception.dart';
-import 'package:riverpod_structure/core/services/network/network_service.dart';
+import 'package:riverpod_structure/core/services/network_service.dart';
 import 'package:riverpod_structure/core/utils/app_urls.dart';
 import 'package:riverpod_structure/features/movie_detail/data/models/casts_response.dart';
 import 'package:riverpod_structure/features/movie_detail/data/models/movie_detail.dart';

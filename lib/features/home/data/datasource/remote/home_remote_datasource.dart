@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:riverpod_structure/features/home/data/datasource/remote/home_remote_data_source.dart';
 import 'package:riverpod_structure/features/home/data/models/genre_response.dart';
 import 'package:riverpod_structure/features/home/data/models/movies_response.dart';
-import 'package:riverpod_structure/core/services/network/network_service.dart';
+import 'package:riverpod_structure/core/services/network_service.dart';
 import 'package:riverpod_structure/core/exceptions/app_exception.dart';
 import 'package:riverpod_structure/core/utils/app_urls.dart';
 

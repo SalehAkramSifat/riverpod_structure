@@ -30,22 +30,27 @@ class NoInternetScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget content = _buildContent(context);
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color bgColor = isDark ? AppColors.backgroundDark : AppColors.white;
+    final Widget content = _buildContent(context, isDark);
 
     if (!isFullScreen) {
-      return content;
+      return Container(
+        color: bgColor,
+        child: content,
+      );
     }
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: bgColor,
       appBar: showBackButton
           ? AppBar(
-              backgroundColor: AppColors.backgroundDark,
+              backgroundColor: bgColor,
               elevation: 0,
               leading: IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.arrow_back_ios_new_rounded,
-                  color: AppColors.black,
+                  color: isDark ? AppColors.white : AppColors.black,
                 ),
                 onPressed: () => Navigator.of(context).maybePop(),
               ),
@@ -55,8 +60,11 @@ class NoInternetScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context) {
-    final double animDim = animationSize ?? 300.w;
+  Widget _buildContent(BuildContext context, bool isDark) {
+    final double animDim = animationSize ?? 260.w;
+    final Color textColor = isDark ? AppColors.white : AppColors.black;
+    final Color subTextColor =
+        isDark ? AppColors.secondaryLight : AppColors.secondaryLight;
 
     return Center(
       child: SingleChildScrollView(
@@ -76,8 +84,8 @@ class NoInternetScreen extends StatelessWidget {
                 errorBuilder: (context, error, stackTrace) {
                   return Icon(
                     Icons.wifi_off_rounded,
-                    size: 96.sp,
-                    color: AppColors.backgroundDark,
+                    size: 80.sp,
+                    color: isDark ? AppColors.secondaryLight : AppColors.primaryLight,
                   );
                 },
               ),
@@ -88,7 +96,7 @@ class NoInternetScreen extends StatelessWidget {
               text: title ?? 'No Internet Connection',
               fontSize: 20.sp,
               fontWeight: FontWeight.w700,
-              color: AppColors.black,
+              color: textColor,
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 8.h),
@@ -101,7 +109,7 @@ class NoInternetScreen extends StatelessWidget {
                     'Please check your Wi-Fi or mobile data connection and try again.',
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
-                color: AppColors.black,
+                color: subTextColor,
                 textAlign: TextAlign.center,
                 height: 1.5,
               ),
