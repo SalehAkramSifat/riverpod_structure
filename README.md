@@ -65,7 +65,7 @@ lib/
 │   │
 │   ├── services/
 │   │   ├── auth_service.dart               # Hardware-encrypted secure storage & in-memory cache
-│   │   ├── network_service.dart            # HTTP client (GET, POST, PUT, PATCH, DELETE, Multipart)
+│   │   ├── network_service.dart            # Dio REST client (GET, POST, PUT, PATCH, DELETE, Multipart)
 │   │   └── network_controller.dart         # Real-time connectivity & DNS internet access monitor
 │   │
 │   ├── theme/
@@ -105,11 +105,11 @@ Location: [`lib/core/services/auth_service.dart`](file:///c:/Project/riverpod_st
 
 ---
 
-### 2. Network Client (`NetworkCaller`)
+### 2. Dio REST Client (`NetworkCaller`)
 Location: [`lib/core/services/network_service.dart`](file:///c:/Project/riverpod_structure/lib/core/services/network_service.dart)
 
-Clean, readable, and robust HTTP client powered by **`Dio`**:
-- **Supported Methods**: `getRequest`, `postRequest`, `loginPostRequest`, `putRequest`, `patchRequest`, `deleteRequest`, and `multipartRequest`.
+Clean, readable, and robust REST API client powered by **Dio**:
+- **Supported Methods**: `getRequest`, `postRequest`, `putRequest`, `patchRequest`, `deleteRequest`, and `multipartRequest`.
 - **Automatic Bearer Token Injection**: Automatically injects `Authorization: Bearer <token>` from `AuthService.token` unless explicitly overridden.
 - **Automatic 401 Session Expiry**: Calls `NetworkCaller.onUnauthorized` callback on receiving HTTP 401, redirecting the user to login.
 - **Smart HTML / Server Crash Filter**: Parses server errors (500, 502, 503) and strips out ugly HTML tags to provide clean, human-readable error messages.

@@ -99,22 +99,6 @@ class NetworkCaller {
     }
   }
 
-  /// Specialized POST for Auth/Login (ignores Bearer token)
-  Future<ResponseData> loginPostRequest(
-    String endpoint, {
-    dynamic body,
-    Map<String, dynamic>? queryParams,
-    Map<String, String>? headers,
-  }) {
-    return postRequest(
-      endpoint,
-      body: body,
-      queryParams: queryParams,
-      headers: headers,
-      attachAuth: false,
-    );
-  }
-
   // 3️⃣ PUT Request
   Future<ResponseData> putRequest(
     String endpoint, {
