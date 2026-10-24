@@ -2,7 +2,6 @@
 
 A clean, readable, and beginner-friendly Flutter architecture boilerplate powered by **Flutter Riverpod 3.x**, **GoRouter**, and **Dio**.
 
-🔗 **Repository:** [https://github.com/SalehAkramSifat/riverpod_structure](https://github.com/SalehAkramSifat/riverpod_structure)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
