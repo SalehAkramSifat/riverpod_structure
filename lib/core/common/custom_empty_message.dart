@@ -4,16 +4,8 @@ import 'package:riverpod_structure/core/common/custom_button.dart';
 import 'package:riverpod_structure/core/common/custom_text.dart';
 import 'package:riverpod_structure/core/utils/app_colors.dart';
 
-/// Predefined empty state scenarios
-enum EmptyStateType {
-  general,
-  search,
-  notification,
-  favorite,
-  error,
-}
+enum EmptyStateType { general, search, notification, favorite, error }
 
-/// A standardized, theme-aware empty state widget for lists, search, and placeholders.
 class CustomEmptyState extends StatelessWidget {
   final EmptyStateType type;
   final String? customTitle;
@@ -44,7 +36,6 @@ class CustomEmptyState extends StatelessWidget {
     this.isScrollable = true,
   });
 
-  /// Convenient factory for empty search results
   factory CustomEmptyState.search({
     Key? key,
     String? searchQuery,
@@ -62,7 +53,6 @@ class CustomEmptyState extends StatelessWidget {
     );
   }
 
-  /// Convenient factory for empty notification inbox
   factory CustomEmptyState.notification({
     Key? key,
     VoidCallback? onRefresh,
@@ -78,7 +68,6 @@ class CustomEmptyState extends StatelessWidget {
     );
   }
 
-  /// Convenient factory for empty bookmarks or favorites
   factory CustomEmptyState.favorite({
     Key? key,
     VoidCallback? onExplore,
@@ -94,7 +83,6 @@ class CustomEmptyState extends StatelessWidget {
     );
   }
 
-  /// Convenient factory for error state with retry action
   factory CustomEmptyState.error({
     Key? key,
     String? errorMessage,
@@ -123,12 +111,14 @@ class CustomEmptyState extends StatelessWidget {
     final effectiveIconColor =
         iconColor ?? (isDark ? AppColors.chipTextDark : AppColors.primary);
 
-    final String effectiveTitle = customTitle ??
+    final String effectiveTitle =
+        customTitle ??
         ((searchQuery != null && searchQuery!.trim().isNotEmpty)
             ? 'No Results Found'
             : config.title);
 
-    final String effectiveMessage = customMessage ??
+    final String effectiveMessage =
+        customMessage ??
         ((searchQuery != null && searchQuery!.trim().isNotEmpty)
             ? "We couldn't find any matches for \"${searchQuery!.trim()}\". Try checking for typos or searching with different keywords."
             : config.message);
@@ -225,7 +215,8 @@ class CustomEmptyState extends StatelessWidget {
         return EmptyStateConfig(
           icon: Icons.search_off_rounded,
           title: 'No Results Found',
-          message: 'Try checking for typos or searching with different keywords.',
+          message:
+              'Try checking for typos or searching with different keywords.',
           actionLabel: 'Clear Search',
         );
       case EmptyStateType.notification:
@@ -246,7 +237,8 @@ class CustomEmptyState extends StatelessWidget {
         return EmptyStateConfig(
           icon: Icons.error_outline_rounded,
           title: 'Something Went Wrong',
-          message: 'Unable to load data. Please check your connection and try again.',
+          message:
+              'Unable to load data. Please check your connection and try again.',
           actionLabel: 'Try Again',
         );
       case EmptyStateType.general:

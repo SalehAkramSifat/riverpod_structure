@@ -35,10 +35,7 @@ class NoInternetScreen extends StatelessWidget {
     final Widget content = _buildContent(context, isDark);
 
     if (!isFullScreen) {
-      return Container(
-        color: bgColor,
-        child: content,
-      );
+      return Container(color: bgColor, child: content);
     }
 
     return Scaffold(
@@ -63,8 +60,9 @@ class NoInternetScreen extends StatelessWidget {
   Widget _buildContent(BuildContext context, bool isDark) {
     final double animDim = animationSize ?? 260.w;
     final Color textColor = isDark ? AppColors.white : AppColors.black;
-    final Color subTextColor =
-        isDark ? AppColors.secondaryLight : AppColors.secondaryLight;
+    final Color subTextColor = isDark
+        ? AppColors.secondaryLight
+        : AppColors.secondaryLight;
 
     return Center(
       child: SingleChildScrollView(
@@ -85,7 +83,9 @@ class NoInternetScreen extends StatelessWidget {
                   return Icon(
                     Icons.wifi_off_rounded,
                     size: 80.sp,
-                    color: isDark ? AppColors.secondaryLight : AppColors.primaryLight,
+                    color: isDark
+                        ? AppColors.secondaryLight
+                        : AppColors.primaryLight,
                   );
                 },
               ),
@@ -116,7 +116,6 @@ class NoInternetScreen extends StatelessWidget {
             ),
             SizedBox(height: 28.h),
 
-            // Action / Retry Button
             if (onRetry != null)
               CustomButton(
                 text: buttonText,

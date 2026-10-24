@@ -1,28 +1,23 @@
 import 'package:flutter/material.dart';
 
 extension BuildContextExtension on BuildContext {
-  // Theme & Colors
   ThemeData get theme => Theme.of(this);
   TextTheme get textTheme => Theme.of(this).textTheme;
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
 
-  // Screen Dimensions (Modern & Optimized)
   double get width => MediaQuery.sizeOf(this).width;
   double get height => MediaQuery.sizeOf(this).height;
   Size get screenSize => MediaQuery.sizeOf(this);
   Orientation get orientation => MediaQuery.orientationOf(this);
 
-  // Backwards compatibility getters
   double get sizeWidth => width;
   double get sizeHeight => height;
 
-  // Paddings & Insets
   EdgeInsets get padding => MediaQuery.paddingOf(this);
   EdgeInsets get viewInsets => MediaQuery.viewInsetsOf(this);
   bool get isKeyboardOpen => MediaQuery.viewInsetsOf(this).bottom > 0;
 
-  // UI Helpers
   void unfocus() => FocusScope.of(this).unfocus();
 
   void showSnackBar(String message, {bool isError = false}) {

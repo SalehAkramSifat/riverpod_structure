@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:riverpod_structure/feature/splash_screen.dart';
 
 class AppRoute {
   // Route Paths
-  static const String home = '/';
+  static const String splash = '/';
+  static const String home = '/home';
   static const String movieDetail = '/movieDetail';
   static const String bookmarks = '/bookmarks';
 
   // Route List
   static final List<RouteBase> routes = [
+    GoRoute(
+      path: splash,
+      name: 'splash',
+      builder: (context, state) => SplashScreen(key: state.pageKey),
+    ),
     // GoRoute(
     //   path: home,
     //   name: 'home',
@@ -33,7 +40,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: AppRoute.home,
+    initialLocation: AppRoute.splash,
     navigatorKey: rootNavigatorKey,
     debugLogDiagnostics: false,
     routes: AppRoute.routes,

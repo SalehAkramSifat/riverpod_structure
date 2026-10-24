@@ -12,7 +12,6 @@ class Params {
   static const String apiKey = 'api_key';
 }
 
-/// Clean, short, and production-ready HTTP Network Caller powered by [Dio].
 class NetworkCaller {
   static const Duration _timeout = Duration(seconds: 30);
 
@@ -26,22 +25,24 @@ class NetworkCaller {
   static bool get isOffline => !NetworkController.isConnectedNow;
 
   static ResponseData get _offlineResponse => ResponseData.error(
-        message: 'No internet connection. Please verify your network.',
-        statusCode: 0,
-      );
+    message: 'No internet connection. Please verify your network.',
+    statusCode: 0,
+  );
 
   NetworkCaller({Dio? dio})
-      : _dio = dio ??
-            Dio(
-              BaseOptions(
-                baseUrl: AppUrls.baseUrl,
-                connectTimeout: _timeout,
-                receiveTimeout: _timeout,
-                sendTimeout: _timeout,
-                validateStatus: (status) => true, // Manual status validation for clean handling
-                responseType: ResponseType.json,
-              ),
-            );
+    : _dio =
+          dio ??
+          Dio(
+            BaseOptions(
+              baseUrl: AppUrls.baseUrl,
+              connectTimeout: _timeout,
+              receiveTimeout: _timeout,
+              sendTimeout: _timeout,
+              validateStatus: (status) =>
+                  true, // Manual status validation for clean handling
+              responseType: ResponseType.json,
+            ),
+          );
 
   // 1️⃣ GET Request
   Future<ResponseData> getRequest(
@@ -222,10 +223,7 @@ class NetworkCaller {
       final response = await _dio.request(
         endpoint,
         data: formData,
-        options: Options(
-          method: method,
-          headers: requestHeaders,
-        ),
+        options: Options(method: method, headers: requestHeaders),
         onSendProgress: onSendProgress,
       );
 
@@ -243,16 +241,15 @@ class NetworkCaller {
     String? token,
     Map<String, String>? headers,
     ProgressCallback? onSendProgress,
-  }) =>
-      multipartRequest(
-        endpoint,
-        method: 'POST',
-        fields: fields,
-        files: files,
-        token: token,
-        headers: headers,
-        onSendProgress: onSendProgress,
-      );
+  }) => multipartRequest(
+    endpoint,
+    method: 'POST',
+    fields: fields,
+    files: files,
+    token: token,
+    headers: headers,
+    onSendProgress: onSendProgress,
+  );
 
   // ================= Private Helpers =================
 
@@ -267,10 +264,8 @@ class NetworkCaller {
     };
 
     if (attachAuth) {
-      final activeToken = token ??
-          authToken ??
-          tokenProvider?.call() ??
-          AuthService.token;
+      final activeToken =
+          token ?? authToken ?? tokenProvider?.call() ?? AuthService.token;
 
       if (activeToken != null && activeToken.trim().isNotEmpty) {
         headers['Authorization'] = activeToken.startsWith('Bearer ')
@@ -293,25 +288,25 @@ class NetworkCaller {
     AppLogger.info('📥 Status: $statusCode');
 
     if (statusCode >= 200 && statusCode < 300) {
-      return ResponseData.success(
-        responseData: data,
-        statusCode: statusCode,
-      );
+      return ResponseData.success(responseData: data, statusCode: statusCode);
     }
 
     if (statusCode == 401) {
-      AppLogger.warning('🔒 Unauthorized (401). Triggering session expiration.');
+      AppLogger.warning(
+        '🔒 Unauthorized (401). Triggering session expiration.',
+      );
       onUnauthorized?.call();
       return ResponseData.error(
-        message: _extractErrorMessage(data) ??
+        message:
+            _extractErrorMessage(data) ??
             'Session expired. Please log in again.',
         statusCode: 401,
         responseData: data,
       );
     }
 
-    final errorMessage = _extractErrorMessage(data) ??
-        'Request failed with status $statusCode';
+    final errorMessage =
+        _extractErrorMessage(data) ?? 'Request failed with status $statusCode';
 
     AppLogger.error('❌ API Error: $errorMessage (Code: $statusCode)');
     return ResponseData.error(
@@ -369,8 +364,7 @@ class NetworkCaller {
             );
           }
           return ResponseData.error(
-            message:
-                'An unexpected network error occurred. Please try again.',
+            message: 'An unexpected network error occurred. Please try again.',
             statusCode: 500,
           );
       }

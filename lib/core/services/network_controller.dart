@@ -5,20 +5,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_structure/core/logging/logger.dart';
 
-/// Immutable state representing network connectivity.
 class NetworkState {
   final bool isConnected;
   final bool isChecking;
 
-  const NetworkState({
-    this.isConnected = true,
-    this.isChecking = false,
-  });
+  const NetworkState({this.isConnected = true, this.isChecking = false});
 
-  NetworkState copyWith({
-    bool? isConnected,
-    bool? isChecking,
-  }) {
+  NetworkState copyWith({bool? isConnected, bool? isChecking}) {
     return NetworkState(
       isConnected: isConnected ?? this.isConnected,
       isChecking: isChecking ?? this.isChecking,
@@ -37,31 +30,31 @@ class NetworkState {
   int get hashCode => isConnected.hashCode ^ isChecking.hashCode;
 }
 
-/// Global controller to monitor real-time network connectivity.
-///
-/// Features:
-/// - Real-time stream listening via [Connectivity]
-/// - Verification of real internet access via DNS lookup (avoids "Connected without Internet" false positives)
-/// - Exposes reactive [NetworkState] and synchronous [isConnectedNow] helper
 class NetworkController extends Notifier<NetworkState> {
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _subscription;
 
-  /// Fast synchronous flag for non-widget callers (e.g., NetworkCaller)
   static bool isConnectedNow = true;
+
+  bool _isDisposed = false;
 
   @override
   NetworkState build() {
-    _initConnectivity();
     ref.onDispose(() {
+      _isDisposed = true;
       _subscription?.cancel();
     });
+    Future.microtask(() => _initConnectivity());
     return const NetworkState(isConnected: true, isChecking: false);
   }
 
   Future<void> _initConnectivity() async {
     await checkConnection();
-    _subscription = _connectivity.onConnectivityChanged.listen(_handleConnectivityChanged);
+    if (!_isDisposed) {
+      _subscription = _connectivity.onConnectivityChanged.listen(
+        _handleConnectivityChanged,
+      );
+    }
   }
 
   void _handleConnectivityChanged(List<ConnectivityResult> results) async {
@@ -76,8 +69,8 @@ class NetworkController extends Notifier<NetworkState> {
     _updateStatus(hasInternet);
   }
 
-  /// Explicitly check connectivity (useful for "Try Again" callbacks).
   Future<bool> checkConnection() async {
+    if (_isDisposed) return isConnectedNow;
     state = state.copyWith(isChecking: true);
     try {
       final results = await _connectivity.checkConnectivity();
@@ -95,24 +88,28 @@ class NetworkController extends Notifier<NetworkState> {
       _updateStatus(false);
       return false;
     } finally {
-      state = state.copyWith(isChecking: false);
+      if (!_isDisposed) {
+        state = state.copyWith(isChecking: false);
+      }
     }
   }
 
   void _updateStatus(bool connected) {
     isConnectedNow = connected;
-    state = state.copyWith(isConnected: connected);
+    if (!_isDisposed) {
+      state = state.copyWith(isConnected: connected);
+    }
   }
 
-  /// Pings google.com via DNS lookup to verify real internet reachability.
   Future<bool> _hasRealInternet() async {
     if (kIsWeb) {
       return true;
     }
 
     try {
-      final result = await InternetAddress.lookup('google.com')
-          .timeout(const Duration(seconds: 4));
+      final result = await InternetAddress.lookup(
+        'google.com',
+      ).timeout(const Duration(seconds: 4));
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
     } on SocketException catch (_) {
       return false;
@@ -124,11 +121,9 @@ class NetworkController extends Notifier<NetworkState> {
   }
 }
 
-/// Global provider for [NetworkController]
 final networkControllerProvider =
     NotifierProvider<NetworkController, NetworkState>(NetworkController.new);
 
-/// Convenience provider for listening only to connectivity boolean
 final isConnectedProvider = Provider<bool>((ref) {
   return ref.watch(networkControllerProvider).isConnected;
 });
