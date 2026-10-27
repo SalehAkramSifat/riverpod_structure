@@ -5,20 +5,20 @@ class ResponseData {
   final bool isSuccess;
   final int statusCode;
   final dynamic responseData;
-  final String errorMessage;
+  final String message;
 
   ResponseData({
     required this.isSuccess,
     required this.statusCode,
     this.responseData,
-    this.errorMessage = '',
+    this.message = '',
   });
 
   dynamic get data => responseData;
 
-  String get message => errorMessage;
+  String get errorMessage => message;
 
-  String? get statusMessage => errorMessage.isNotEmpty ? errorMessage : null;
+  String? get statusMessage => message.isNotEmpty ? message : null;
 
   factory ResponseData.success({
     dynamic data,
@@ -30,7 +30,7 @@ class ResponseData {
       isSuccess: true,
       statusCode: statusCode,
       responseData: data ?? responseData,
-      errorMessage: message,
+      message: message,
     );
   }
 
@@ -44,7 +44,7 @@ class ResponseData {
       isSuccess: false,
       statusCode: statusCode,
       responseData: data ?? responseData,
-      errorMessage: message,
+      message: message,
     );
   }
 

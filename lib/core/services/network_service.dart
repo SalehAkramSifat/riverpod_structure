@@ -288,7 +288,12 @@ class NetworkCaller {
     AppLogger.info('📥 Status: $statusCode');
 
     if (statusCode >= 200 && statusCode < 300) {
-      return ResponseData.success(responseData: data, statusCode: statusCode);
+      final serverMessage = _extractErrorMessage(data) ?? 'Request successful';
+      return ResponseData.success(
+        responseData: data,
+        statusCode: statusCode,
+        message: serverMessage,
+      );
     }
 
     if (statusCode == 401) {
