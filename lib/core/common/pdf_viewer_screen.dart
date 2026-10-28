@@ -220,7 +220,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                         ),
                       ),
                       child: const CircularProgressIndicator(
-                        color: AppColors.black,
+                        color: Colors.white,
                         strokeWidth: 3,
                       ),
                     ),

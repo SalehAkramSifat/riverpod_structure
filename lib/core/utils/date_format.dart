@@ -219,9 +219,20 @@ class DateFormatter {
   static DateTime? _parseDate(dynamic date) {
     if (date == null) return null;
     if (date is DateTime) return date;
+    if (date is int) {
+      if (date < 10000000000) {
+        return DateTime.fromMillisecondsSinceEpoch(date * 1000);
+      }
+      return DateTime.fromMillisecondsSinceEpoch(date);
+    }
     if (date is String) {
-      if (date.trim().isEmpty) return null;
-      return DateTime.tryParse(date.trim());
+      final trimmed = date.trim();
+      if (trimmed.isEmpty) return null;
+      final numeric = int.tryParse(trimmed);
+      if (numeric != null) {
+        return _parseDate(numeric);
+      }
+      return DateTime.tryParse(trimmed);
     }
     return null;
   }

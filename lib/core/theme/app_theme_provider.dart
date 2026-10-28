@@ -42,7 +42,11 @@ class AppThemeNotifier extends Notifier<ThemeMode> {
   }
 
   void toggleTheme() {
-    if (state == ThemeMode.dark) {
+    final isCurrentlyDark = state == ThemeMode.dark ||
+        (state == ThemeMode.system &&
+            WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                Brightness.dark);
+    if (isCurrentlyDark) {
       setLightTheme();
     } else {
       setDarkTheme();

@@ -59,7 +59,9 @@ class AppSnackBar {
     if (overlay == null) return;
 
     // Remove any currently active snackbar
-    _currentEntry?.remove();
+    if (_currentEntry != null && _currentEntry!.mounted) {
+      _currentEntry?.remove();
+    }
     _currentEntry = null;
 
     late final OverlayEntry entry;
@@ -72,7 +74,9 @@ class AppSnackBar {
         duration: duration,
         onDismissed: () {
           if (_currentEntry == entry) {
-            entry.remove();
+            if (entry.mounted) {
+              entry.remove();
+            }
             _currentEntry = null;
           }
         },

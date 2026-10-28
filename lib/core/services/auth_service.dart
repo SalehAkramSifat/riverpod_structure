@@ -173,7 +173,7 @@ class AuthService {
   static Future<void> goToLogin() async {
     final context = rootNavigatorKey.currentContext;
     if (context != null) {
-      context.go(AppRoute.home);
+      context.go(AppRoute.splash);
     }
   }
 }

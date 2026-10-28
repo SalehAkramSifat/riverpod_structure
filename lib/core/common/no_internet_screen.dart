@@ -61,7 +61,7 @@ class NoInternetScreen extends StatelessWidget {
     final double animDim = animationSize ?? 260.w;
     final Color textColor = isDark ? AppColors.white : AppColors.black;
     final Color subTextColor = isDark
-        ? AppColors.secondaryLight
+        ? AppColors.white.withValues(alpha: 0.6)
         : AppColors.secondaryLight;
 
     return Center(

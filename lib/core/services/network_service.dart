@@ -52,7 +52,7 @@ class NetworkCaller {
     Map<String, String>? headers,
   }) async {
     if (isOffline) return _offlineResponse;
-    AppLogger.info('🌐 GET Request: $endpoint');
+    AppLogger.logRequest('GET', endpoint);
 
     try {
       final response = await _dio.get(
@@ -78,8 +78,7 @@ class NetworkCaller {
     bool attachAuth = true,
   }) async {
     if (isOffline) return _offlineResponse;
-    AppLogger.info('🚀 POST Request: $endpoint');
-    if (body != null) AppLogger.json(body, tag: 'POST Request');
+    AppLogger.logRequest('POST', endpoint, body: body);
 
     try {
       final response = await _dio.post(
@@ -109,8 +108,7 @@ class NetworkCaller {
     Map<String, String>? headers,
   }) async {
     if (isOffline) return _offlineResponse;
-    AppLogger.info('🔄 PUT Request: $endpoint');
-    if (body != null) AppLogger.json(body, tag: 'PUT Request');
+    AppLogger.logRequest('PUT', endpoint, body: body);
 
     try {
       final response = await _dio.put(
@@ -136,8 +134,7 @@ class NetworkCaller {
     Map<String, String>? headers,
   }) async {
     if (isOffline) return _offlineResponse;
-    AppLogger.info('✏️ PATCH Request: $endpoint');
-    if (body != null) AppLogger.json(body, tag: 'PATCH Request');
+    AppLogger.logRequest('PATCH', endpoint, body: body);
 
     try {
       final response = await _dio.patch(
@@ -163,7 +160,7 @@ class NetworkCaller {
     Map<String, String>? headers,
   }) async {
     if (isOffline) return _offlineResponse;
-    AppLogger.info('🗑️ DELETE Request: $endpoint');
+    AppLogger.logRequest('DELETE', endpoint, body: body);
 
     try {
       final response = await _dio.delete(
@@ -285,7 +282,12 @@ class NetworkCaller {
     final statusCode = response.statusCode ?? 500;
     final dynamic data = response.data;
 
-    AppLogger.info('📥 Status: $statusCode');
+    AppLogger.logResponse(
+      response.requestOptions.method,
+      response.requestOptions.path,
+      statusCode,
+      data: data,
+    );
 
     if (statusCode >= 200 && statusCode < 300) {
       final serverMessage = _extractErrorMessage(data) ?? 'Request successful';
@@ -297,9 +299,6 @@ class NetworkCaller {
     }
 
     if (statusCode == 401) {
-      AppLogger.warning(
-        '🔒 Unauthorized (401). Triggering session expiration.',
-      );
       onUnauthorized?.call();
       return ResponseData.error(
         message:
@@ -313,7 +312,6 @@ class NetworkCaller {
     final errorMessage =
         _extractErrorMessage(data) ?? 'Request failed with status $statusCode';
 
-    AppLogger.error('❌ API Error: $errorMessage (Code: $statusCode)');
     return ResponseData.error(
       message: errorMessage,
       statusCode: statusCode,
@@ -323,56 +321,63 @@ class NetworkCaller {
 
   ResponseData _handleError(dynamic error) {
     if (error is DioException) {
-      AppLogger.error('❌ DioException: [${error.type}] ${error.message}');
+      if (error.type == DioExceptionType.badResponse &&
+          error.response != null) {
+        return _handleResponse(error.response!);
+      }
+
+      final String message;
+      final int statusCode;
+
       switch (error.type) {
         case DioExceptionType.connectionTimeout:
         case DioExceptionType.sendTimeout:
         case DioExceptionType.receiveTimeout:
-          return ResponseData.error(
-            message:
-                'Request timed out. Please check your internet connection.',
-            statusCode: 408,
-          );
+          message = 'Request timed out. Please check your internet connection.';
+          statusCode = 408;
+          break;
         case DioExceptionType.connectionError:
-          return ResponseData.error(
-            message: 'No internet connection. Please verify your network.',
-            statusCode: 0,
-          );
+          message = 'No internet connection. Please verify your network.';
+          statusCode = 0;
+          break;
         case DioExceptionType.badCertificate:
-          return ResponseData.error(
-            message: 'Security certificate error. Please try again later.',
-            statusCode: 495,
-          );
+          message = 'Security certificate error. Please try again later.';
+          statusCode = 495;
+          break;
         case DioExceptionType.cancel:
-          return ResponseData.error(
-            message: 'Request was cancelled.',
-            statusCode: 499,
-          );
+          message = 'Request was cancelled.';
+          statusCode = 499;
+          break;
         case DioExceptionType.badResponse:
-          if (error.response != null) {
-            return _handleResponse(error.response!);
-          }
-          return ResponseData.error(
-            message: 'Server returned an invalid response.',
-            statusCode: error.response?.statusCode ?? 500,
-          );
+          message = 'Server returned an invalid response.';
+          statusCode = error.response?.statusCode ?? 500;
+          break;
         case DioExceptionType.transformTimeout:
-          return ResponseData.error(
-            message: 'Data processing timed out. Please try again.',
-            statusCode: 408,
-          );
+          message = 'Data processing timed out. Please try again.';
+          statusCode = 408;
+          break;
         case DioExceptionType.unknown:
           if (error.error is SocketException) {
-            return ResponseData.error(
-              message: 'No internet connection. Please verify your network.',
-              statusCode: 0,
-            );
+            message = 'No internet connection. Please verify your network.';
+            statusCode = 0;
+          } else {
+            message = 'An unexpected network error occurred. Please try again.';
+            statusCode = 500;
           }
-          return ResponseData.error(
-            message: 'An unexpected network error occurred. Please try again.',
-            statusCode: 500,
-          );
+          break;
       }
+
+      AppLogger.logNetworkError(
+        error.requestOptions.method,
+        error.requestOptions.path,
+        error: '$message (${error.message ?? error.type.name})',
+        statusCode: statusCode,
+      );
+
+      return ResponseData.error(
+        message: message,
+        statusCode: statusCode,
+      );
     }
 
     if (error is SocketException) {

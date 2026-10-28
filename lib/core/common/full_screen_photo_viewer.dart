@@ -142,7 +142,7 @@ class _FullScreenPhotoViewerState extends State<FullScreenPhotoViewer> {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.black.withAlpha(180), Colors.transparent],
+                      colors: [Colors.black.withValues(alpha: 0.71), Colors.transparent],
                     ),
                   ),
                   child: SafeArea(
@@ -198,7 +198,7 @@ class _FullScreenPhotoViewerState extends State<FullScreenPhotoViewer> {
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                         colors: [
-                          Colors.black.withAlpha(180),
+                          Colors.black.withValues(alpha: 0.71),
                           Colors.transparent,
                         ],
                       ),
@@ -344,8 +344,8 @@ class _ZoomablePhotoViewState extends State<_ZoomablePhotoView>
     } else {
       final position = _doubleTapDetails?.localPosition ?? Offset.zero;
       endMatrix = Matrix4.identity()
-        ..translateByDouble(-position.dx * 1.5, -position.dy * 1.5, 0.0, 1.0)
-        ..scaleByDouble(2.5, 2.5, 1.0, 1.0);
+        ..translate(-position.dx * 1.5, -position.dy * 1.5)
+        ..scale(2.5, 2.5);
     }
 
     _zoomAnimation =

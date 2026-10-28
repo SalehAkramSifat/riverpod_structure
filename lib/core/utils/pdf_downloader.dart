@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,10 @@ class PdfDownloader {
         context.showSnackBar('Invalid PDF URL', isError: true);
       }
       return null;
+    }
+
+    if (kIsWeb) {
+      return await _openExternal(url, context: context);
     }
 
     try {
@@ -43,7 +48,7 @@ class PdfDownloader {
       }
 
       if (directory == null || !await directory.exists()) {
-        if (context != null && !context.mounted) return null;
+        if (context == null || !context.mounted) return null;
         return await _openExternal(url, context: context);
       }
 
@@ -56,7 +61,7 @@ class PdfDownloader {
       context.showSnackBar('PDF downloaded successfully: $fileName');
       return file;
     } catch (_) {
-      if (context != null && !context.mounted) return null;
+      if (context == null || !context.mounted) return null;
       return await _openExternal(url, context: context);
     }
   }

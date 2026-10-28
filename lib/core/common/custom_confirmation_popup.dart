@@ -57,9 +57,10 @@ class CustomConfirmationPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final Color primaryActionColor = isDestructive
         ? Colors.redAccent
-        : AppColors.black;
+        : (isDark ? AppColors.white : AppColors.black);
     final IconData displayIcon =
         icon ??
         (isDestructive
@@ -73,7 +74,7 @@ class CustomConfirmationPopup extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
@@ -100,7 +101,7 @@ class CustomConfirmationPopup extends StatelessWidget {
               text: title,
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: isDark ? AppColors.white : Colors.black87,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
@@ -108,7 +109,7 @@ class CustomConfirmationPopup extends StatelessWidget {
             CustomText(
               text: message,
               fontSize: 14,
-              color: Colors.grey.shade600,
+              color: isDark ? Colors.white70 : Colors.grey.shade600,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -125,17 +126,17 @@ class CustomConfirmationPopup extends StatelessWidget {
                     },
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                      side: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300, width: 1.5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      foregroundColor: Colors.grey.shade700,
+                      foregroundColor: isDark ? Colors.white70 : Colors.grey.shade700,
                     ),
                     child: CustomText(
                       text: cancelButtonText,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade700,
+                      color: isDark ? Colors.white70 : Colors.grey.shade700,
                     ),
                   ),
                 ),
@@ -148,7 +149,7 @@ class CustomConfirmationPopup extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryActionColor,
-                      foregroundColor: Colors.white,
+                      foregroundColor: isDestructive ? Colors.white : (isDark ? AppColors.black : Colors.white),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -159,7 +160,7 @@ class CustomConfirmationPopup extends StatelessWidget {
                       text: confirmButtonText,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: isDestructive ? Colors.white : (isDark ? AppColors.black : Colors.white),
                     ),
                   ),
                 ),

@@ -125,6 +125,9 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultFillColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final defaultTextColor = isDark ? AppColors.white : AppColors.black;
     final BorderRadius effectiveRadius = BorderRadius.circular(
       widget.radius ?? 12.r,
     );
@@ -190,7 +193,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           color: widget.suffixIconColor ?? AppColors.textSecondary,
           size: 20.r,
         ),
-        splashRadius: 20.r,
         onPressed: () {
           setState(() {
             _obscureText = !_obscureText;
@@ -224,7 +226,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       enabled: widget.enabled,
       autofocus: widget.autofocus,
       obscureText: _obscureText,
-      maxLines: widget.isPassword ? 1 : widget.maxLines,
+      maxLines: (_obscureText || widget.isPassword) ? 1 : widget.maxLines,
       minLines: widget.minLines,
       maxLength: widget.maxLength,
       keyboardType: widget.keyboardType,
@@ -240,12 +242,12 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           GoogleFonts.inter(
             fontSize: 15.sp,
             fontWeight: FontWeight.w400,
-            color: Colors.black,
+            color: defaultTextColor,
           ),
       decoration: InputDecoration(
         isDense: true,
         filled: true,
-        fillColor: widget.containerColor ?? Colors.white,
+        fillColor: widget.containerColor ?? defaultFillColor,
         hintText: widget.hintText,
         hintStyle:
             widget.hintTextStyle ??
@@ -265,7 +267,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
             GoogleFonts.inter(
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
-              color: Colors.black,
+              color: defaultTextColor,
             ),
         prefixIcon: effectivePrefixIcon,
         prefixIconConstraints: BoxConstraints(minWidth: 44.w, minHeight: 44.h),
@@ -275,7 +277,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
             GoogleFonts.inter(
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
-              color: Colors.black,
+              color: defaultTextColor,
             ),
         suffixIcon: effectiveSuffixIcon,
         suffixIconConstraints: BoxConstraints(minWidth: 44.w, minHeight: 44.h),

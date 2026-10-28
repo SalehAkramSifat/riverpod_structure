@@ -125,14 +125,28 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
           alignment: Alignment.center,
           children: [
             _buildBackButton(context, backIconColor),
-            _buildTitle(
-              hasTitle: hasTitle,
-              titleColor: titleColor,
-              textAlign: centerTitle ? TextAlign.center : TextAlign.start,
-              padding: EdgeInsets.symmetric(
-                horizontal: showBackIcon ? 56.w : 16.w,
+            if (centerTitle)
+              _buildTitle(
+                hasTitle: hasTitle,
+                titleColor: titleColor,
+                textAlign: TextAlign.center,
+                padding: EdgeInsets.symmetric(
+                  horizontal: showBackIcon ? 56.w : 16.w,
+                ),
+              )
+            else
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _buildTitle(
+                  hasTitle: hasTitle,
+                  titleColor: titleColor,
+                  textAlign: TextAlign.start,
+                  padding: EdgeInsets.only(
+                    left: showBackIcon ? 56.w : 16.w,
+                    right: 16.w,
+                  ),
+                ),
               ),
-            ),
           ],
         );
 
@@ -141,16 +155,30 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
           alignment: Alignment.center,
           children: [
             _buildBackButton(context, backIconColor),
-            _buildTitle(
-              hasTitle: hasTitle,
-              titleColor: titleColor,
-              textAlign: centerTitle ? TextAlign.center : TextAlign.start,
-              padding: EdgeInsets.symmetric(
-                horizontal: (showBackIcon || trailingIcon != null)
-                    ? 56.w
-                    : 16.w,
+            if (centerTitle)
+              _buildTitle(
+                hasTitle: hasTitle,
+                titleColor: titleColor,
+                textAlign: TextAlign.center,
+                padding: EdgeInsets.symmetric(
+                  horizontal: (showBackIcon || trailingIcon != null)
+                      ? 56.w
+                      : 16.w,
+                ),
+              )
+            else
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _buildTitle(
+                  hasTitle: hasTitle,
+                  titleColor: titleColor,
+                  textAlign: TextAlign.start,
+                  padding: EdgeInsets.only(
+                    left: showBackIcon ? 56.w : 16.w,
+                    right: trailingIcon != null ? 56.w : 16.w,
+                  ),
+                ),
               ),
-            ),
             if (trailingIcon != null)
               Align(
                 alignment: Alignment.centerRight,
@@ -192,7 +220,6 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
           size: 24.sp,
           color: iconColor,
         ),
-        splashRadius: 22.r,
         tooltip: 'Back',
       ),
     );

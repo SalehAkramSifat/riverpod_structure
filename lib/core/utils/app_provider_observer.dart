@@ -1,14 +1,14 @@
-import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_structure/core/logging/logger.dart';
 
 base class AppProviderObserver extends ProviderObserver {
   @override
   void didAddProvider(ProviderObserverContext context, Object? value) {
     if (kDebugMode) {
-      log(
-        '➕ Provider Added: ${context.provider.name ?? context.provider.runtimeType} | Value: $value',
-        name: 'Riverpod',
+      AppLogger.trace(
+        'Provider Added: ${context.provider.name ?? context.provider.runtimeType}',
+        tag: 'Riverpod',
       );
     }
   }
@@ -20,9 +20,9 @@ base class AppProviderObserver extends ProviderObserver {
     Object? newValue,
   ) {
     if (kDebugMode) {
-      log(
-        '🔄 Provider Updated: ${context.provider.name ?? context.provider.runtimeType}\n   Previous: $previousValue\n   New: $newValue',
-        name: 'Riverpod',
+      AppLogger.trace(
+        'Provider Updated: ${context.provider.name ?? context.provider.runtimeType}',
+        tag: 'Riverpod',
       );
     }
   }
@@ -31,9 +31,9 @@ base class AppProviderObserver extends ProviderObserver {
   void didDisposeProvider(ProviderObserverContext context) {
     super.didDisposeProvider(context);
     if (kDebugMode) {
-      log(
-        '🗑️ Provider Disposed: ${context.provider.name ?? context.provider.runtimeType}',
-        name: 'Riverpod',
+      AppLogger.trace(
+        'Provider Disposed: ${context.provider.name ?? context.provider.runtimeType}',
+        tag: 'Riverpod',
       );
     }
   }
@@ -45,9 +45,9 @@ base class AppProviderObserver extends ProviderObserver {
     StackTrace stackTrace,
   ) {
     if (kDebugMode) {
-      log(
-        '❌ Provider Failed: ${context.provider.name ?? context.provider.runtimeType}\n   Error: $error',
-        name: 'Riverpod',
+      AppLogger.error(
+        'Provider Failed: ${context.provider.name ?? context.provider.runtimeType}',
+        tag: 'Riverpod',
         error: error,
         stackTrace: stackTrace,
       );

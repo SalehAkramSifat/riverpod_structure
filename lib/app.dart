@@ -32,7 +32,7 @@ class MyApp extends ConsumerWidget {
           builder: (context, routerChild) {
             return Stack(
               children: [
-                ?routerChild,
+                if (routerChild != null) routerChild,
                 if (!networkState.isConnected)
                   Positioned.fill(
                     child: NoInternetScreen(

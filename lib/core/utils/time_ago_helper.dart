@@ -67,9 +67,20 @@ class TimeAgoHelper {
   static DateTime? _parseDateTime(dynamic input) {
     if (input == null) return null;
     if (input is DateTime) return input;
+    if (input is int) {
+      if (input < 10000000000) {
+        return DateTime.fromMillisecondsSinceEpoch(input * 1000);
+      }
+      return DateTime.fromMillisecondsSinceEpoch(input);
+    }
     if (input is String) {
-      if (input.trim().isEmpty) return null;
-      return DateTime.tryParse(input.trim());
+      final trimmed = input.trim();
+      if (trimmed.isEmpty) return null;
+      final numeric = int.tryParse(trimmed);
+      if (numeric != null) {
+        return _parseDateTime(numeric);
+      }
+      return DateTime.tryParse(trimmed);
     }
     return null;
   }

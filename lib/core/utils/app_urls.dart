@@ -14,5 +14,5 @@ class AppUrls {
   static const String genre = 'genre/movie/list';
 
   static String movie(dynamic id) => 'movie/$id';
-  static String casts(int id) => '/movie/$id/credits';
+  static String casts(int id) => 'movie/$id/credits';
 }
