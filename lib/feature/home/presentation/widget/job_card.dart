@@ -1,16 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:practice_riverpod/core/common/custom_text.dart';
+import 'package:practice_riverpod/core/common/network_image_handler.dart';
 import 'package:practice_riverpod/core/utils/app_colors.dart';
-import 'package:practice_riverpod/feature/home/model/job_model.dart';
 
 class JobCard extends StatelessWidget {
-  final JobModel job;
+  final String title;
+  final String companyName;
+  final String location;
+  final String salary;
+  final String jobType;
+  final String category;
+  final String? logoUrl;
+  final String postedTime;
+  final bool isBookmarked;
   final VoidCallback? onTap;
   final VoidCallback? onBookmarkTap;
 
-  const JobCard({super.key, required this.job, this.onTap, this.onBookmarkTap});
+  const JobCard({
+    super.key,
+    required this.title,
+    required this.companyName,
+    required this.location,
+    required this.salary,
+    required this.jobType,
+    required this.category,
+    this.logoUrl,
+    required this.postedTime,
+    this.isBookmarked = false,
+    this.onTap,
+    this.onBookmarkTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +39,10 @@ class JobCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.textFormFieldBorder, width: 1.2),
+        border: Border.all(
+          color: AppColors.textFormFieldBorder,
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -43,45 +66,53 @@ class JobCard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Company Logo
+                    // Company Logo with NetworkImageHandler
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12.r),
                       child: Container(
                         width: 48.w,
                         height: 48.h,
                         color: const Color(0xFFF1F5F9),
-                        child: Image.network(
-                          job.logoUrl,
+                        child: NetworkImageHandler(
+                          imageUrl: logoUrl,
+                          width: 48.w,
+                          height: 48.h,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Icon(
-                            Icons.business_rounded,
-                            size: 26.r,
-                            color: AppColors.primary,
+                          errorWidget: Container(
+                            color: const Color(0xFFF1F5F9),
+                            alignment: Alignment.center,
+                            child: Icon(
+                              Icons.business_rounded,
+                              size: 26.r,
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ),
                     ),
                     SizedBox(width: 12.w),
 
-                    // Title & Company
+                    // Title & Company using CustomText
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            text: job.title,
+                            text: title,
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            textOverflow: TextOverflow.ellipsis,
                           ),
                           SizedBox(height: 3.h),
                           CustomText(
-                            text: job.companyName,
+                            text: companyName,
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w400,
                             color: AppColors.textSecondary,
+                            maxLines: 1,
+                            textOverflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -92,10 +123,10 @@ class JobCard extends StatelessWidget {
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       icon: Icon(
-                        job.isBookmarked
+                        isBookmarked
                             ? Icons.bookmark_rounded
                             : Icons.bookmark_border_rounded,
-                        color: job.isBookmarked
+                        color: isBookmarked
                             ? AppColors.primary
                             : AppColors.outlineBorder,
                         size: 24.r,
@@ -107,7 +138,7 @@ class JobCard extends StatelessWidget {
 
                 SizedBox(height: 14.h),
 
-                // Location and Posted Time
+                // Location and Posted Time using CustomText
                 Row(
                   children: [
                     Icon(
@@ -117,7 +148,7 @@ class JobCard extends StatelessWidget {
                     ),
                     SizedBox(width: 4.w),
                     CustomText(
-                      text: job.location,
+                      text: location,
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
                       color: AppColors.textSecondary,
@@ -130,7 +161,7 @@ class JobCard extends StatelessWidget {
                     ),
                     SizedBox(width: 4.w),
                     CustomText(
-                      text: job.postedTime,
+                      text: postedTime,
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
                       color: AppColors.textTertiary,
@@ -139,10 +170,10 @@ class JobCard extends StatelessWidget {
                 ),
 
                 SizedBox(height: 14.h),
-                Divider(height: 1, color: const Color(0xFFF1F5F9)),
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
                 SizedBox(height: 12.h),
 
-                // Bottom Row: Badges (Job Type, Category) & Salary
+                // Bottom Row: Badges & Salary using CustomText
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -158,13 +189,11 @@ class JobCard extends StatelessWidget {
                             color: AppColors.primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
-                          child: Text(
-                            job.jobType,
-                            style: GoogleFonts.inter(
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primary,
-                            ),
+                          child: CustomText(
+                            text: jobType,
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
                           ),
                         ),
                         SizedBox(width: 8.w),
@@ -179,26 +208,22 @@ class JobCard extends StatelessWidget {
                             color: const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
-                          child: Text(
-                            job.category,
-                            style: GoogleFonts.inter(
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textSecondary,
-                            ),
+                          child: CustomText(
+                            text: category,
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
                     ),
 
-                    // Salary
-                    Text(
-                      job.salary,
-                      style: GoogleFonts.inter(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
+                    // Salary using CustomText
+                    CustomText(
+                      text: salary,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
                     ),
                   ],
                 ),

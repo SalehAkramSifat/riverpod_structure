@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:practice_riverpod/core/common/app_snackbar.dart';
 import 'package:practice_riverpod/core/common/custom_text.dart';
@@ -7,7 +8,9 @@ import 'package:practice_riverpod/core/common/custom_textformfield.dart';
 import 'package:practice_riverpod/core/services/auth_service.dart';
 import 'package:practice_riverpod/core/utils/app_colors.dart';
 import 'package:practice_riverpod/feature/home/model/job_model.dart';
+import 'package:practice_riverpod/feature/home/presentation/widget/home_header.dart';
 import 'package:practice_riverpod/feature/home/presentation/widget/job_card.dart';
+import 'package:practice_riverpod/routes/app_router.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -91,85 +94,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: 16.h),
 
                 // 1. Top Header (User Greeting & Actions)
-                Row(
-                  children: [
-                    // User Avatar
-                    CircleAvatar(
-                      radius: 24.r,
-                      backgroundColor: AppColors.primary.withValues(
-                        alpha: 0.15,
-                      ),
-                      child: Text(
-                        'S',
-                        style: GoogleFonts.inter(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-
-                    // Greeting
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomText(
-                            text: 'Hello, Sifat 👋',
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                          ),
-                          SizedBox(height: 2.h),
-                          CustomText(
-                            text: 'Find your dream opportunity',
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.textSecondary,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Notification Button
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: AppColors.textFormFieldBorder,
-                        ),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.notifications_none_rounded),
-                        color: AppColors.textPrimary,
-                        onPressed: () {
-                          AppSnackBar.showSuccess('No new notifications');
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-
-                    // Profile Button
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: AppColors.textFormFieldBorder,
-                        ),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.person_outline_rounded),
-                        color: AppColors.textPrimary,
-                        onPressed: () {
-                          // TODO: Navigate to Profile Screen
-                          AppSnackBar.showSuccess('Navigating to Profile...');
-                        },
-                      ),
-                    ),
-                  ],
+                HomeHeader(
+                  userName: 'Sifat',
+                  subtitle: 'Find your dream opportunity',
+                  onNotificationTap: () {
+                    AppSnackBar.showSuccess('No new notifications');
+                  },
+                  onProfileTap: () {
+                    context.push(AppRoute.profileScreen);
+                  },
                 ),
 
                 SizedBox(height: 20.h),
@@ -409,7 +342,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final job = filteredJobs[index];
                       return JobCard(
-                        job: job,
+                        title: job.title,
+                        companyName: job.companyName,
+                        location: job.location,
+                        salary: job.salary,
+                        jobType: job.jobType,
+                        category: job.category,
+                        logoUrl: job.logoUrl,
+                        postedTime: job.postedTime,
+                        isBookmarked: job.isBookmarked,
                         onTap: () {
                           AppSnackBar.showSuccess('Selected: ${job.title}');
                         },

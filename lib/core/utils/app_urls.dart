@@ -1,18 +1,11 @@
 class AppUrls {
   // Base URLs
-  static const String baseUrl = 'https://api.themoviedb.org/3/';
-  static const String baseImageUrl = 'https://image.tmdb.org/t/p/';
+  static const String baseUrl = 'http://10.0.2.2:8000/api/v1';
 
-  // Image URLs
-  static String movieBackdrop(String path) => '${baseImageUrl}w780$path';
-  static String moviePoster(String path) => '${baseImageUrl}w500$path';
-  static String castProfile(String path) => '${baseImageUrl}w185$path';
-
-  // API Endpoints
-  static const String nowShowing = 'movie/now_playing';
-  static const String popular = 'movie/top_rated';
-  static const String genre = 'genre/movie/list';
-
-  static String movie(dynamic id) => 'movie/$id';
-  static String casts(int id) => 'movie/$id/credits';
+  static const String register = '$baseUrl/auth/register';
+  static const String login = '$baseUrl/auth/login';
+  static const String forgotPassword = '$baseUrl/auth/forgot-password';
+  static const String otpVerify = '$baseUrl/auth/verify-otp';
+  static const String resetPassowrd = '$baseUrl/auth/reset-password';
+  static const String getMe = '$baseUrl/users/me';
 }

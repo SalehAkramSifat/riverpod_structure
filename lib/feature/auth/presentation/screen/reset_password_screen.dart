@@ -9,17 +9,14 @@ import 'package:practice_riverpod/core/common/custom_button.dart';
 import 'package:practice_riverpod/core/common/custom_text.dart';
 import 'package:practice_riverpod/core/common/custom_textformfield.dart';
 import 'package:practice_riverpod/core/utils/app_colors.dart';
+import 'package:practice_riverpod/feature/auth/controller/reset/reset_password_controller.dart';
 import 'package:practice_riverpod/routes/app_router.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   final String? email;
   final String? otp;
 
-  const ResetPasswordScreen({
-    super.key,
-    this.email,
-    this.otp,
-  });
+  const ResetPasswordScreen({super.key, this.email, this.otp});
 
   @override
   ConsumerState<ResetPasswordScreen> createState() =>
@@ -40,6 +37,17 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(resetProvider, (previous, next) {
+      if (next.isLoading == true) return;
+      if (next.isSuccess == true) {
+        AppSnackBar.showSuccess('Password reset successfully!');
+        context.go(AppRoute.homeScreen);
+      } else {
+        AppSnackBar.showSuccess(next.errorMessage);
+      }
+    });
+    final screenState = ref.watch(resetProvider);
+    final notifier = ref.read(resetProvider.notifier);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: const CustomAppbar(),
@@ -51,7 +59,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             children: [
               SizedBox(height: 20.h),
 
-              // Header Banner Image
               Center(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16.r),
@@ -99,7 +106,6 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
               SizedBox(height: 32.h),
 
-              // New Password Field
               CustomText(
                 text: 'New Password',
                 fontSize: 14.sp,
@@ -148,6 +154,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               // Reset Password Button
               CustomButton(
                 text: 'Reset Password',
+                isLoading: screenState.isLoading == true,
                 onTap: () {
                   final newPassword = newPasswordController.text.trim();
                   final confirmPassword = confirmPasswordController.text.trim();
@@ -158,7 +165,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   }
                   if (newPassword.length < 6) {
                     AppSnackBar.showError(
-                        'Password must be at least 6 characters');
+                      'Password must be at least 6 characters',
+                    );
                     return;
                   }
                   if (confirmPassword.isEmpty) {
@@ -170,15 +178,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     return;
                   }
 
-                  // TODO: Connect with ResetPasswordController when ready
-                  AppSnackBar.showSuccess('Password reset successfully!');
-                  context.go(AppRoute.loginScreen);
+                  notifier.resetPassword(password: newPassword);
                 },
               ),
 
               SizedBox(height: 32.h),
 
-              // Back to Login Link
               Center(
                 child: GestureDetector(
                   onTap: () {
@@ -215,4 +220,3 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     );
   }
 }
-

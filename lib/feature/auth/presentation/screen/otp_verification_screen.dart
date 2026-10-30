@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:practice_riverpod/core/common/app_snackbar.dart';
 import 'package:practice_riverpod/core/common/custom_appbar.dart';
 import 'package:practice_riverpod/core/common/custom_button.dart';
 import 'package:practice_riverpod/core/common/custom_text.dart';
+import 'package:practice_riverpod/core/logging/logger.dart';
 import 'package:practice_riverpod/core/utils/app_colors.dart';
+import 'package:practice_riverpod/feature/auth/controller/verification/otp_verification_controller.dart';
+import 'package:practice_riverpod/routes/app_router.dart';
 
 class OtpVerificationScreen extends ConsumerStatefulWidget {
   final String? email;
+  final bool? isFromRegister;
 
-  const OtpVerificationScreen({super.key, this.email});
+  const OtpVerificationScreen({super.key, this.email, this.isFromRegister});
 
   @override
   ConsumerState<OtpVerificationScreen> createState() =>
@@ -32,6 +37,24 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(otpVerificationProvider, (previous, next) {
+      if (next.isSuccess == true) {
+        if (widget.isFromRegister == true) {
+          AppSnackBar.showSuccess("Your account create is successfull. ");
+          AppLogger.info("Now you can go to home");
+        } else {
+          AppSnackBar.showSuccess("Now you can reset your password.");
+          context.push(AppRoute.resetPasswordScreen);
+        }
+      } else if (next.errorMessage?.isNotEmpty ?? false) {
+        AppSnackBar.showError("${next.errorMessage}");
+      }
+    });
+
+    final otpState = ref.watch(otpVerificationProvider);
+    final otpVerificationController = ref.read(
+      otpVerificationProvider.notifier,
+    );
     final defaultPinTheme = PinTheme(
       width: 46.w,
       height: 52.h,
@@ -159,13 +182,17 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
               // Verify Button
               CustomButton(
                 text: 'Verify Code',
+                isLoading: otpState.isLoading ?? false,
                 onTap: () {
                   final otp = otpController.text.trim();
                   if (otp.length < 6) {
                     AppSnackBar.showError('Please enter a 6-digit OTP code');
                     return;
                   }
-                  // Action when verifying OTP
+                  otpVerificationController.verification(
+                    email: widget.email ?? "",
+                    otp: otp,
+                  );
                 },
               ),
 

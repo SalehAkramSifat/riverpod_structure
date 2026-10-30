@@ -9,7 +9,8 @@ import 'package:practice_riverpod/core/common/custom_button.dart';
 import 'package:practice_riverpod/core/common/custom_text.dart';
 import 'package:practice_riverpod/core/common/custom_textformfield.dart';
 import 'package:practice_riverpod/core/utils/app_colors.dart';
-import 'package:practice_riverpod/feature/auth/controller/forgot_password_controller.dart';
+import 'package:practice_riverpod/feature/auth/controller/forgot/forgot_password_controller.dart';
+import 'package:practice_riverpod/routes/app_router.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -33,6 +34,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     ref.listen(forgotProvider, (previous, next) {
       if (next.isSuccess) {
         AppSnackBar.showSuccess("Please check your email.");
+        context.push(
+          AppRoute.otpVerificationScreen,
+          extra: emailController.text.trim(),
+        );
       } else if (next.errorMessage.isNotEmpty) {
         AppSnackBar.showError(next.errorMessage);
       }

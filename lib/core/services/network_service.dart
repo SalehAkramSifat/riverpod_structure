@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_structure/core/logging/logger.dart';
@@ -52,6 +53,11 @@ class NetworkCaller {
     Map<String, String>? headers,
   }) async {
     if (isOffline) return _offlineResponse;
+    final requestHeaders = _buildHeaders(token: token, extraHeaders: headers);
+    final authToken = requestHeaders['Authorization'];
+    AppLogger.info('🔑 [GET Token]: ${authToken ?? 'No Token / Empty'}');
+    debugPrint('🔑 [GET Token]: ${authToken ?? 'No Token / Empty'}');
+
     AppLogger.logRequest('GET', endpoint);
 
     try {
