@@ -263,7 +263,9 @@ flutter run
 
 I strongly believe that learning is an everyday journey, and I am constantly striving to grow as a developer. In fact, I would genuinely love to learn from **you**! 
 
-I recently started building architectures around **Riverpod**, and this starter template is my honest effort to create a clean, maintainable, and scalable boilerplate. That said, nobody writes flawless code from day one:
+I recently started building architectures around **Riverpod**, and this starter template is my honest effort to create a clean, maintainable, and scalable boilerplate. I am actively maintaining and continuously refining this repository—whenever I spot any area for improvement, performance optimization, or a cleaner approach myself, I try to address and update it right away.
+
+That said, nobody writes flawless code alone from day one:
 
 > If you spot any mistakes, anti-patterns, bugs, or know a simpler, cleaner, and more efficient way to handle any part of this project—**please let me know!** 
 
@@ -273,7 +275,7 @@ Please treat every flaw as an open invitation to help me improve:
 - ☕ Want to discuss architecture, suggest improvements privately, or just connect? Feel free to reach out to me directly on [GitHub](https://github.com/SalehAkramSifat)!
 - ⭐ If you find this boilerplate helpful, consider starring the repo—it means a lot!
 
-I will personally review your ideas and do my best to refine and improve the codebase. Let’s learn together and build better Flutter apps!
+I will personally review your ideas, suggestions, and pull requests, and do my best to continuously refine and elevate the codebase. Let’s learn together and build better Flutter apps!
 
 ---
 
