@@ -1,38 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:riverpod_structure/feature/splash_screen.dart';
+import 'package:riverpod_structure/feature/presentation/screen/welcome_screen.dart';
 
 class AppRoute {
   // Route Paths
   static const String splash = '/';
-  static const String home = '/home';
-  static const String movieDetail = '/movieDetail';
-  static const String bookmarks = '/bookmarks';
+  static const String welcome = 'welcome';
 
   // Route List
   static final List<RouteBase> routes = [
     GoRoute(
-      path: splash,
-      name: 'splash',
-      builder: (context, state) => SplashScreen(key: state.pageKey),
+      path: welcome,
+      name: 'welcome',
+      builder: (context, state) => WelcomeScreen(key: state.pageKey),
     ),
-    // GoRoute(
-    //   path: home,
-    //   name: 'home',
-    //   builder: (context, state) => HomePage(key: state.pageKey),
-    // ),
-    // GoRoute(
-    //   path: movieDetail,
-    //   name: 'movieDetail',
-    //   builder: (context, state) =>
-    //       MovieDetailScreen(key: state.pageKey, movieId: state.extra as int),
-    // ),
-    // GoRoute(
-    //   path: bookmarks,
-    //   name: 'bookmarks',
-    //   builder: (context, state) => BookmarkScreen(key: state.pageKey),
-    // ),
   ];
 }
 
@@ -40,7 +22,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: AppRoute.splash,
+    initialLocation: AppRoute.welcome,
     navigatorKey: rootNavigatorKey,
     debugLogDiagnostics: false,
     routes: AppRoute.routes,
@@ -48,18 +30,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 });
 
 /*
+NAVIGATION USAGE:
+1. Navigate to screen:
+   context.go(AppRoute.welcome);
 
-1. NAVIGATION 
-   // Push to new screen 
-   context.push(AppRoute.bookmarks);
+2. Push screen:
+   context.push('/someRoute');
 
-   // Go to screen 
-   context.go(AppRoute.home);
-
-   // Pop / Go back 
+3. Pop / Go Back:
    context.pop();
-
-2. PASSING ARGUMENTS  :
-   context.push(AppRoute.movieDetail, extra: movie.id);
-
 */

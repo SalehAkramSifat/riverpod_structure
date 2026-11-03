@@ -20,6 +20,8 @@ A clean, readable, and beginner-friendly Flutter architecture boilerplate powere
 - [Navigation & Routing (`GoRouter`)](#-navigation--routing-gorouter)
 - [Assets Management](#-assets-management)
 - [Getting Started](#-getting-started)
+- [A Note from the Author](#-a-note-from-the-author)
+- [License](#-license)
 
 ---
 
@@ -28,7 +30,7 @@ A clean, readable, and beginner-friendly Flutter architecture boilerplate powere
 The codebase is structured to enforce separation of concerns while keeping files short, readable, and developer-friendly:
 
 - **Core Layer (`lib/core/`)**: Houses foundational services, design systems, common widgets, utilities, and global configurations shared across all features.
-- **Features Layer (`lib/features/`)**: Feature-driven modules separated into `data`, `domain`, and `presentation` layers following Clean Architecture.
+- **Feature Layer (`lib/feature/`)**: Feature-driven modules and UI screens (e.g. `welcome_screen.dart`).
 - **Routes Layer (`lib/routes/`)**: Centralized declarative routing powered by GoRouter and Riverpod.
 
 ---
@@ -85,7 +87,7 @@ lib/
 │       ├── time_ago_helper.dart            # Relative time helper ("5m ago", "Just now")
 │       └── app_provider_observer.dart      # Riverpod state change debugger
 │
-└── features/                               # Feature-first modules (Data, Domain, Presentation)
+└── feature/                                # Feature modules & UI screens (e.g. welcome_screen.dart)
 ```
 
 ---
@@ -247,13 +249,31 @@ flutter pub get
 
 ### 4. Verify Code Integrity
 ```bash
-dart analyze lib/core lib/routes lib/main.dart lib/app.dart
+dart analyze lib/
 ```
 
 ### 5. Run the Project
 ```bash
 flutter run
 ```
+
+---
+
+## 💬 A Note from the Author
+
+I strongly believe that learning is an everyday journey, and I am constantly striving to grow as a developer. In fact, I would genuinely love to learn from **you**! 
+
+I recently started building architectures around **Riverpod**, and this starter template is my honest effort to create a clean, maintainable, and scalable boilerplate. That said, nobody writes flawless code from day one:
+
+> If you spot any mistakes, anti-patterns, bugs, or know a simpler, cleaner, and more efficient way to handle any part of this project—**please let me know!** 
+
+Please treat every flaw as an open invitation to help me improve:
+- 💡 Open an [Issue](https://github.com/SalehAkramSifat/riverpod_structure/issues) with your thoughts or suggestions.
+- 🛠️ Submit a [Pull Request](https://github.com/SalehAkramSifat/riverpod_structure/pulls) with your proposed changes.
+- ☕ Want to discuss architecture, suggest improvements privately, or just connect? Feel free to reach out to me directly on [GitHub](https://github.com/SalehAkramSifat)!
+- ⭐ If you find this boilerplate helpful, consider starring the repo—it means a lot!
+
+I will personally review your ideas and do my best to refine and improve the codebase. Let’s learn together and build better Flutter apps!
 
 ---
 
