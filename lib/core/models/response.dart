@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:riverpod_structure/core/exceptions/app_exception.dart';
+import 'package:riverpod_structure/core/errors/exceptions.dart';
 
 class ResponseData {
   final bool isSuccess;

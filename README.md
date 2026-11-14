@@ -45,39 +45,62 @@ lib/
 │   └── app_router.dart                     # GoRouter configuration & rootNavigatorKey
 │
 ├── core/
-│   ├── common/                             # Standardized theme-aware UI components
-│   │   ├── custom_appbar.dart              # Multi-mode AppBar (minimal, centerText, trailing)
-│   │   ├── custom_button.dart              # Button with filled, outlined, text & loading state
-│   │   ├── custom_empty_message.dart       # Empty state handler (search, favorite, error, general)
-│   │   ├── custom_text.dart                # ScreenUtil-scaled GoogleFonts text wrapper
-│   │   ├── custom_textformfield.dart       # Form field with prefix/suffix & validation
-│   │   ├── no_internet_screen.dart         # Adaptive offline screen with Lottie animation
-│   │   ├── pdf_viewer_screen.dart          # Syncfusion PDF viewer screen
-│   │   └── full_screen_photo_viewer.dart   # Interactive photo viewer
+│   ├── core.dart                           # Master barrel export for all core modules
 │   │
-│   ├── exceptions/
-│   │   └── app_exception.dart              # Unified error handling model with toLeft() helper
+│   ├── constants/                          # Centralized design tokens and app constants
+│   │   ├── app_colors.dart                 # Centralized color tokens
+│   │   ├── app_icons.dart                  # SVG Icon paths
+│   │   ├── app_images.dart                 # Asset image paths
+│   │   ├── app_strings.dart                # App strings & branding
+│   │   ├── app_animations.dart             # Lottie & JSON animations
+│   │   ├── app_urls.dart                   # Environment-aware Base URLs
+│   │   └── api_endpoints.dart              # Clean relative API endpoints
 │   │
-│   ├── extensions/
-│   │   └── build_context_extensions.dart   # context.width, context.isDarkMode, context.showSnackBar
+│   ├── errors/                             # Typed Error & Exception Architecture
+│   │   ├── exceptions.dart                 # ServerException, NetworkException, UnauthorizedException
+│   │   └── failures.dart                   # Equatable-based Domain Failures
 │   │
-│   ├── logging/
-│   │   └── logger.dart                     # AppLogger with Pretty JSON & release guards
+│   ├── extensions/                         # Production extension utilities
+│   │   ├── build_context_extensions.dart   # context.width, isDarkMode, mounted-safe showSnackBar
+│   │   ├── string_extensions.dart          # isValidEmail, isValidPhone, capitalize, titleCase
+│   │   └── async_value_extensions.dart     # showSnackBarOnError for Riverpod UI
 │   │
-│   ├── models/
+│   ├── logging/                            # Standardized Logging
+│   │   └── logger.dart                     # AppLogger with pretty JSON, ANSI colors & release guards
+│   │
+│   ├── models/                             # Models & Data wrappers
 │   │   └── response.dart                   # Standard ResponseData model with .fold() support
 │   │
-│   ├── services/
-│   │   ├── auth_service.dart               # Hardware-encrypted secure storage & in-memory cache
-│   │   ├── network_service.dart            # Dio REST client (GET, POST, PUT, PATCH, DELETE, Multipart)
-│   │   └── network_controller.dart         # Real-time connectivity & DNS internet access monitor
+│   ├── network/                            # Modern Injected Network Layer
+│   │   ├── dio_client.dart                 # Riverpod dioProvider with BaseOptions & timeouts
+│   │   ├── api_client.dart                 # Injected ApiClient with typed exception mapping
+│   │   ├── connectivity_service.dart       # Reactive internet & DNS connectivity monitor
+│   │   └── interceptors/                   # AuthInterceptor & LoggingInterceptor
 │   │
-│   ├── theme/
+│   ├── storage/                            # Segregated Storage Layer (SRP)
+│   │   ├── secure_storage_service.dart     # Encrypted tokens, refresh tokens & credentials
+│   │   └── local_storage_service.dart      # General app settings, theme, onboarding flags
+│   │
+│   ├── theme/                              # Theming System
 │   │   ├── app_theme.dart                  # Light and Dark ThemeData definitions
-│   │   └── app_theme_provider.dart         # ThemeMode state notifier with secure persistence
+│   │   └── app_theme_provider.dart         # Decoupled ThemeMode notifier using LocalStorageService
 │   │
-│   └── utils/
-│       ├── app_colors.dart                 # Centralized color tokens
+│   ├── utils/                              # Pure helper utilities
+│   │   ├── app_provider_observer.dart      # Riverpod lifecycle logger
+│   │   ├── date_format.dart                # Human-friendly date formatting
+│   │   ├── time_ago_helper.dart            # Relative timestamp parser
+│   │   ├── distance_calculate.dart         # Haversine geographic calculation
+│   │   └── pdf_downloader.dart             # Android 10+ scoped-storage compliant downloader
+│   │
+│   └── widgets/                            # Standardized theme-aware UI components
+│       ├── custom_appbar.dart              # Multi-mode AppBar (minimal, centerText, trailing)
+│       ├── custom_button.dart              # Button with filled, outlined, text & loading state
+│       ├── custom_empty_message.dart       # Empty state handler (search, favorite, error, general)
+│       ├── custom_text.dart                # ScreenUtil-scaled GoogleFonts text wrapper
+│       ├── custom_textformfield.dart       # Form field with prefix/suffix & validation
+│       ├── no_internet_screen.dart         # Adaptive offline screen with Lottie animation
+│       ├── pdf_viewer_screen.dart          # Syncfusion PDF viewer screen
+│       └── full_screen_photo_viewer.dart   # Interactive photo viewer
 │       ├── app_strings.dart                # App-wide string constants
 │       ├── app_urls.dart                   # API endpoints & base URLs
 │       ├── app_images.dart                 # Asset image paths

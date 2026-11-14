@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:riverpod_structure/core/common/no_internet_screen.dart';
-import 'package:riverpod_structure/core/services/network_controller.dart';
+import 'package:riverpod_structure/core/widgets/no_internet_screen.dart';
+import 'package:riverpod_structure/core/network/connectivity_service.dart';
 import 'package:riverpod_structure/core/theme/app_theme.dart';
 import 'package:riverpod_structure/core/theme/app_theme_provider.dart';
-import 'package:riverpod_structure/core/utils/app_strings.dart';
+import 'package:riverpod_structure/core/constants/app_strings.dart';
 import 'routes/app_router.dart';
 
 class MyApp extends ConsumerWidget {

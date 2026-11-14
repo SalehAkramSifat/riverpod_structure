@@ -1,9 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_structure/core/extensions/build_context_extensions.dart';
+import 'package:riverpod_structure/core/logging/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PdfDownloader {
@@ -35,34 +36,39 @@ class PdfDownloader {
 
       Directory? directory;
       if (Platform.isAndroid) {
-        directory = Directory('/storage/emulated/0/Download');
-        if (!await directory.exists()) {
-          directory = await getExternalStorageDirectory();
-        }
+        directory = await getExternalStorageDirectory() ??
+            await getApplicationDocumentsDirectory();
       } else if (Platform.isIOS || Platform.isMacOS) {
         directory = await getApplicationDocumentsDirectory();
       } else {
-        directory =
-            await getDownloadsDirectory() ??
+        directory = await getDownloadsDirectory() ??
             await getApplicationDocumentsDirectory();
       }
 
-      if (directory == null || !await directory.exists()) {
-        if (context == null || !context.mounted) return null;
-        return await _openExternal(url, context: context);
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
       }
 
       final filePath = '${directory.path}/$fileName';
-      final dio = Dio();
+      final dio = Dio(
+        BaseOptions(
+          connectTimeout: const Duration(seconds: 20),
+          receiveTimeout: const Duration(seconds: 30),
+        ),
+      );
       await dio.download(url, filePath);
       final file = File(filePath);
 
-      if (context == null || !context.mounted) return file;
-      context.showSnackBar('PDF downloaded successfully: $fileName');
+      if (context != null && context.mounted) {
+        context.showSnackBar('PDF downloaded successfully: $fileName');
+      }
       return file;
-    } catch (_) {
-      if (context == null || !context.mounted) return null;
-      return await _openExternal(url, context: context);
+    } catch (e) {
+      AppLogger.error('Failed to download PDF: $e');
+      if (context != null && context.mounted) {
+        return await _openExternal(url, context: context);
+      }
+      return null;
     }
   }
 
@@ -73,8 +79,9 @@ class PdfDownloader {
     final uri = Uri.tryParse(url);
     if (uri != null && await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (context == null || !context.mounted) return null;
-      context.showSnackBar('Opening PDF download in browser...');
+      if (context != null && context.mounted) {
+        context.showSnackBar('Opening PDF download in browser...');
+      }
     } else if (context != null && context.mounted) {
       context.showSnackBar('Could not download or open PDF', isError: true);
     }

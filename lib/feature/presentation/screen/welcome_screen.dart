@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:riverpod_structure/core/common/custom_text.dart';
+import 'package:riverpod_structure/core/widgets/custom_text.dart';
 import 'package:riverpod_structure/core/extensions/build_context_extensions.dart';
-import 'package:riverpod_structure/core/utils/app_colors.dart';
-import 'package:riverpod_structure/core/utils/app_strings.dart';
+import 'package:riverpod_structure/core/constants/app_colors.dart';
+import 'package:riverpod_structure/core/constants/app_strings.dart';
 
 class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({super.key});

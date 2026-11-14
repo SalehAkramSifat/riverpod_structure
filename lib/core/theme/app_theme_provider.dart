@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_structure/core/services/auth_service.dart';
+import 'package:riverpod_structure/core/storage/local_storage_service.dart';
 
 final appThemeProvider = NotifierProvider<AppThemeNotifier, ThemeMode>(
   AppThemeNotifier.new,
 );
 
 class AppThemeNotifier extends Notifier<ThemeMode> {
-  static const String _themeKey = 'app_theme';
+  LocalStorageService get _storage => ref.read(localStorageProvider);
 
   @override
   ThemeMode build() {
@@ -16,7 +16,7 @@ class AppThemeNotifier extends Notifier<ThemeMode> {
   }
 
   Future<void> _loadSavedTheme() async {
-    final String? savedTheme = await AuthService.read(_themeKey);
+    final String? savedTheme = await _storage.getThemeMode();
     if (savedTheme != null) {
       state = switch (savedTheme) {
         'light' => ThemeMode.light,
@@ -28,17 +28,17 @@ class AppThemeNotifier extends Notifier<ThemeMode> {
 
   void setLightTheme() {
     state = ThemeMode.light;
-    AuthService.write(_themeKey, 'light');
+    _storage.saveThemeMode('light');
   }
 
   void setDarkTheme() {
     state = ThemeMode.dark;
-    AuthService.write(_themeKey, 'dark');
+    _storage.saveThemeMode('dark');
   }
 
   void setSystemTheme() {
     state = ThemeMode.system;
-    AuthService.write(_themeKey, 'system');
+    _storage.saveThemeMode('system');
   }
 
   void toggleTheme() {
